@@ -45,6 +45,8 @@ customElements.define('my-cookbook',
 
         #ingredients
 
+        #button
+
         constructor() {
             super()
 
@@ -58,6 +60,13 @@ customElements.define('my-cookbook',
             this.#recipeList = this.shadowRoot.querySelector('#recipe-list')
             this.#recipeTitle = this.shadowRoot.querySelector('#title')
             this.#instructions = this.shadowRoot.querySelector('#instr')
+            this.#button = this.shadowRoot.querySelector('button')
+
+            this.#button.addEventListener('click', (event)=> {
+                event.preventDefault()
+                this.#menu.removeAttribute('class')
+                this.#recipeDetails.setAttribute('class', 'hidden')
+            })
         
         }
         
