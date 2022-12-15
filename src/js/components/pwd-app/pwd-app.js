@@ -2,7 +2,7 @@
  * The pwd-app web component module.
  *
  * @author Anna Manole <am224wd@student.lnu.se>
- * @version 1.1.1
+ * @version 1.1.0
  */
 
 // Define template
@@ -15,9 +15,7 @@ template.innerHTML = `
         height: 100%;
     }
 
-    #desktop {
-        background-color: pink;
-    }
+
 </style>
 
 <div id="desktop">
@@ -31,9 +29,10 @@ template.innerHTML = `
 </div>
 `
 
-customElements.define('pwd',
+customElements.define('pwd-app',
 
     class extends HTMLElement {
+
         #desktop
 
         #taskbar
@@ -52,22 +51,22 @@ customElements.define('pwd',
             this.attachShadow({ mode: 'open' })
                 .appendChild(template.content.cloneNode(true))
 
-            this.#desktop = this.shadowRoot.querySelector("#desktop");
-            this.#taskbar = this.shadowRoot.querySelector("#taskbar");
-            this.#app1 = this.shadowRoot.querySelector("#app1");
-            this.#app2 = this.shadowRoot.querySelector("#app2");
-            this.#app3 = this.shadowRoot.querySelector("#app3");
+            this.#desktop = this.shadowRoot.querySelector('#desktop')
+            this.#taskbar = this.shadowRoot.querySelector('#taskbar')
+            this.#app1 = this.shadowRoot.querySelector('#app1')
+            this.#app2 = this.shadowRoot.querySelector('#app2')
+            this.#app3 = this.shadowRoot.querySelector('#app3')
         }
 
         connectedCallback() {
-            this.app1.addEventListener("click", () => this.openApp("app1"));
-            this.app2.addEventListener("click", () => this.openApp("app2"));
-            this.app3.addEventListener("click", () => this.openApp("app3"));
+            this.#app1.addEventListener('click', () => this.openApp('#app1'))
+            this.#app2.addEventListener('click', () => this.openApp('#app2'))
+            this.#app3.addEventListener('click', () => this.openApp('#app3'))
         }
 
         openApp(appName) {
             // Add code to open the app here
-            console.log(`Opening ${appName}`);
+            console.log(`Opening ${appName}`)
         }
     }
 )

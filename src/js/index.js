@@ -9,5 +9,5 @@
 import './components/memory-app/index.js'
 import './components/messages-app/index.js'
 import './components/my-cookbook/index.js'
-import './components/pwd/index.js'
+import './components/pwd-app/index.js'
 import './components/window-app/index.js'

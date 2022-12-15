@@ -2,7 +2,7 @@
  * The memory-app web component module.
  *
  * @author Anna Manole <am224wd@student.lnu.se>
- * @version 1.1.1
+ * @version 1.1.0
  */
 
 // Define template.

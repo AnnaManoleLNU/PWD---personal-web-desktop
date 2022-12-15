@@ -1,2 +1,2 @@
 // index.js can be used at the root of the component
-import './pwd.js'
+import './pwd-app.js'
