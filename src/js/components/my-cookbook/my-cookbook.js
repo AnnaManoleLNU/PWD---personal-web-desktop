@@ -61,47 +61,74 @@ customElements.define('my-cookbook',
             this.#recipeTitle = this.shadowRoot.querySelector('#title')
             this.#instructions = this.shadowRoot.querySelector('#instr')
             this.#button = this.shadowRoot.querySelector('button')
+            this.#ingredients = this.shadowRoot.querySelector('#ingredients')
 
-            this.#button.addEventListener('click', (event)=> {
+            this.#button.addEventListener('click', (event) => {
                 event.preventDefault()
                 this.#menu.removeAttribute('class')
                 this.#recipeDetails.setAttribute('class', 'hidden')
             })
-        
-        }
-        
-        async connectedCallback() {
-            const recipeList = this.#recipeList
 
+        }
+
+        async connectedCallback() {
             // Fetch 3 random recipes
             for (let i = 0; i < 3; i++) {
                 // Get recipes from the API
                 const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php')
                 const recipe = await response.json()
-                
+
+                // Recipe titles
                 const selectedRecipeTitle = recipe.meals[0].strMeal
                 this.#recipe = document.createElement('p')
                 this.#recipe.textContent = selectedRecipeTitle
+                this.#recipeList.appendChild(this.#recipe)
 
-                // get all the ingredients and corresponding measurement
-                this.#ingredients = recipe.meals[0].strIngredient1
-
-                // get instructions
-                
-                this.#recipe.addEventListener('click', () => {
+                // Event listener for clicking on a recipe
+                this.#recipe.addEventListener('click', (event) => {
+                    event.preventDefault()
                     console.log('generating instructions', selectedRecipeTitle)
                     this.generateInstructions()
                     this.#recipeTitle.textContent = selectedRecipeTitle
                     this.#instructions.textContent = recipe.meals[0].strInstructions
+
+                    // create ingredient list 
+                    const ingredientList = this.createIngredientList(recipe.meals[0])
+                    console.log(ingredientList)
+                    // for every ingredient object
+                    for (let ing of ingredientList) {
+                        const text = ing.ingredient + ing.measure
+                        ing = document.createElement('li')
+                        ing.textContent = text
+                        this.#ingredients.appendChild(ing)
+                    }
                 })
-                
-                recipeList.appendChild(this.#recipe)
             }
+        }
+
+        createIngredientList(json) {
+            // Initialize empty list of ingredients
+            const ingredients = []
+
+            // Loop through each ingredient and measure in the JSON object
+            let i = 1
+            while (json['strIngredient' + i] && json['strMeasure' + i]) {
+                const ingredient = json['strIngredient' + i]
+                const measure = json['strMeasure' + i]
+
+                // Add the ingredient and measure to the list
+                ingredients.push({ ingredient: ingredient, measure: measure })
+
+                // Increment the counter to move on to the next ingredient and measure
+                i++
+            }
+
+            return ingredients
         }
 
         generateInstructions() {
             this.#menu.setAttribute('class', 'hidden')
             this.#recipeDetails.removeAttribute('class')
         }
-        
+
     })
