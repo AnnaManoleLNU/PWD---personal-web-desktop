@@ -12,6 +12,29 @@ template.innerHTML = `
     .hidden {
         display:none;
     }
+
+    #menu {
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    .recipelist {
+        display:flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    ul li {
+       list-style: "\u2661 ";
+    }
+
+    .recipelist:hover {
+        color:pink;
+        cursor: pointer;
+    }
 </style>
 
 <div id="menu">
@@ -65,8 +88,8 @@ customElements.define('my-cookbook',
 
             this.#button.addEventListener('click', (event) => {
                 event.preventDefault()
-                this.#menu.removeAttribute('class')
                 this.#recipeDetails.setAttribute('class', 'hidden')
+                this.#menu.setAttribute('id', 'menu')
             })
 
         }
@@ -83,21 +106,26 @@ customElements.define('my-cookbook',
                 this.#recipe = document.createElement('p')
                 this.#recipe.textContent = selectedRecipeTitle
                 this.#recipeList.appendChild(this.#recipe)
+                this.#recipe.setAttribute('class', 'recipelist')
+
+                // create ingredient list 
+                const ingredientList = this.createIngredientList(recipe.meals[0])
 
                 // Event listener for clicking on a recipe
                 this.#recipe.addEventListener('click', (event) => {
                     event.preventDefault()
-                    console.log('generating instructions', selectedRecipeTitle)
                     this.generateInstructions()
                     this.#recipeTitle.textContent = selectedRecipeTitle
                     this.#instructions.textContent = recipe.meals[0].strInstructions
 
-                    // create ingredient list 
-                    const ingredientList = this.createIngredientList(recipe.meals[0])
-                    console.log(ingredientList)
+                    // Clear the ingredient list before adding new ingredients
+                    while (this.#ingredients.firstChild) {
+                        this.#ingredients.removeChild(this.#ingredients.firstChild)
+                    }
+
                     // for every ingredient object
                     for (let ing of ingredientList) {
-                        const text = ing.ingredient + ing.measure
+                        const text = `${ing.ingredient} ${ing.measure}`
                         ing = document.createElement('li')
                         ing.textContent = text
                         this.#ingredients.appendChild(ing)
@@ -128,6 +156,7 @@ customElements.define('my-cookbook',
 
         generateInstructions() {
             this.#menu.setAttribute('class', 'hidden')
+            this.#menu.removeAttribute('id', '#menu')
             this.#recipeDetails.removeAttribute('class')
         }
 
