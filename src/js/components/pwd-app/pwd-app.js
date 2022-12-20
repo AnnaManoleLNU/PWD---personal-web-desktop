@@ -14,8 +14,23 @@ template.innerHTML = `
         width: 100%;
         height: 100%;
     }
+    
+    #taskbar {
+        display: flex;
+        gap: 10px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        background-color: pink;
+        height: 45px;
+        width: 100%;
+    }
 
-
+    .app-icon {   
+        background-color: salmon;
+        height: 40px;
+        width: 45px;
+    }
 </style>
 
 <div id="desktop">

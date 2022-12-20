@@ -13,11 +13,19 @@ template.innerHTML = `
         display:none;
     }
 
+    h1 {
+        color: pink;
+    }
+
     #menu {
         display:flex;
         align-items: center;
         justify-content: center;
         flex-direction: column;
+    }
+
+    #recipelist {
+        padding-top: 50px;
     }
 
     .recipelist {
@@ -27,20 +35,31 @@ template.innerHTML = `
         flex-direction: column;
     }
 
-    ul li {
-       list-style: "\u2661 ";
+    ul {
+        list-style: none;
+    }
+
+    ul li:before {
+       content: "\u2661 ";
+       color: pink;
     }
 
     .recipelist:hover {
-        color:pink;
+        color: pink;
         cursor: pointer;
+    }
+
+    button {
+        background-color: pink;
+        border-radius: 10px;        
+        padding: 3px 10px 3px 10px;
     }
 </style>
 
 <div id="menu">
     <h1>Cookbook</h1>
     <h3>What would you like to cook today?</h3>
-    <div id="recipe-list"></div>
+    <div id="recipelist"></div>
 </div>
 <div id="recipedetails" class="hidden">
     <h1 id="title"></h1>
@@ -48,7 +67,6 @@ template.innerHTML = `
     <p id="instr"></p>
     <button>Back to Cookbook</button>
 </div>
-
 `
 
 customElements.define('my-cookbook',
@@ -80,7 +98,7 @@ customElements.define('my-cookbook',
 
             this.#menu = this.shadowRoot.querySelector('#menu')
             this.#recipeDetails = this.shadowRoot.querySelector('#recipedetails')
-            this.#recipeList = this.shadowRoot.querySelector('#recipe-list')
+            this.#recipeList = this.shadowRoot.querySelector('#recipelist')
             this.#recipeTitle = this.shadowRoot.querySelector('#title')
             this.#instructions = this.shadowRoot.querySelector('#instr')
             this.#button = this.shadowRoot.querySelector('button')
@@ -110,7 +128,7 @@ customElements.define('my-cookbook',
 
                 // create ingredient list 
                 const ingredientList = this.createIngredientList(recipe.meals[0])
-
+                
                 // Event listener for clicking on a recipe
                 this.#recipe.addEventListener('click', (event) => {
                     event.preventDefault()
@@ -119,6 +137,7 @@ customElements.define('my-cookbook',
                     this.#instructions.textContent = recipe.meals[0].strInstructions
 
                     // Clear the ingredient list before adding new ingredients
+                    // While it has a first child, remove the child
                     while (this.#ingredients.firstChild) {
                         this.#ingredients.removeChild(this.#ingredients.firstChild)
                     }
@@ -150,14 +169,13 @@ customElements.define('my-cookbook',
                 // Increment the counter to move on to the next ingredient and measure
                 i++
             }
-
             return ingredients
         }
 
         generateInstructions() {
             this.#menu.setAttribute('class', 'hidden')
             this.#menu.removeAttribute('id', '#menu')
-            this.#recipeDetails.removeAttribute('class')
+            this.#recipeDetails.removeAttribute('class', 'hidden')
         }
 
     })
