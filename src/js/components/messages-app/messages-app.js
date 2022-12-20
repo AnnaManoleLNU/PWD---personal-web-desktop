@@ -64,19 +64,35 @@ customElements.define('messages-app',
             this.#usernameForm = this.shadowRoot.querySelector('#username-form')
 
             this.#messagesInput = this.shadowRoot.querySelector('#messages-input')
-            
+
             this.#messagesForm = this.shadowRoot.querySelector('#messages-form')
 
             this.#messages = this.shadowRoot.querySelector('.messages')
 
-            // event listeners
+            // For when a username exists already from local storage
+            this.#username = localStorage.getItem('username')
+
+            // Check if a username does not exist in the local storage and if not show the username form so the user can populate the local storage
+            if (!this.#username) {
+                this.#usernameForm.removeAttribute('class', 'hidden')
+              } else {
+                // If the username is stored, hide the username form and show the messages form
+                this.#usernameForm.setAttribute('class', 'hidden')
+                this.#messagesForm.removeAttribute('class', 'hidden')
+              }
+            
+            // Event listeners
             // Event listener for submitting username
             this.#usernameForm.addEventListener('submit', event => {
                 event.preventDefault()
                 this.#username = this.#usernameInput.value
+
+                localStorage.setItem('username', this.#username)
+                
                 this.#usernameForm.setAttribute('class', 'hidden')
                 this.#messagesForm.removeAttribute('class', 'hidden')
             })
+        
 
             // Event listener for submitting message 
             this.#messagesForm.addEventListener('submit', event => {
@@ -87,7 +103,7 @@ customElements.define('messages-app',
                     "username": `${this.#username}`,
                     "key": "eDBE76deU7L0H9mEBgxUKVR0VCnq0XBd"
                 }
-    
+
                 this.#socket.send(JSON.stringify(data))
 
                 this.#messagesInput.value = ''
@@ -96,14 +112,22 @@ customElements.define('messages-app',
             // Socket message event
             this.#socket = new WebSocket('wss://courselab.lnu.se/message-app/socket')
             this.#socket.addEventListener('message', event => this.handleMessage(event))
+
+        } // CONSTRUCTOR END
+
+        connectedCallback() {
         }
+
 
         handleMessage(event) {
             const message = JSON.parse(event.data)
             console.log(event.data)
             const messageElement = document.createElement('div')
-            messageElement.textContent = `${message.username}: ${message.data}`
-            this.#messages.appendChild(messageElement)
+
+            if (message.type !== 'heartbeat') {
+                messageElement.textContent = `${message.username}: ${message.data}`
+                this.#messages.appendChild(messageElement)
+            }
 
             // Only keep the 20 latest messages
             const excessMessages = this.#messages.children.length - 20
