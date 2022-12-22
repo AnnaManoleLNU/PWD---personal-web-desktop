@@ -17,7 +17,7 @@ template.innerHTML = `
         overflow-y: scroll;
         height: 200px;
         padding: 5px;
-        background: pink;
+        border: 5px solid pink;
     }
 
 
@@ -97,7 +97,7 @@ customElements.define('messages-app',
             // Event listener for submitting message 
             this.#messagesForm.addEventListener('submit', event => {
                 event.preventDefault()
-                let data = {
+                const data = {
                     "type": "message",
                     "data": `${this.#messagesInput.value}`,
                     "username": `${this.#username}`,
@@ -111,21 +111,22 @@ customElements.define('messages-app',
 
             // Socket message event
             this.#socket = new WebSocket('wss://courselab.lnu.se/message-app/socket')
-            this.#socket.addEventListener('message', event => this.handleMessage(event))
+            this.#socket.addEventListener('message', event => this.#handleMessage(event))
 
         } // CONSTRUCTOR END
 
         connectedCallback() {
+            
         }
 
-
-        handleMessage(event) {
+        #handleMessage(event) {
             const message = JSON.parse(event.data)
             console.log(event.data)
             const messageElement = document.createElement('div')
+            const date = new Date()
 
             if (message.type !== 'heartbeat') {
-                messageElement.textContent = `${message.username}: ${message.data}`
+                messageElement.textContent = `${date.toLocaleTimeString()} ${message.username}: ${message.data}`
                 this.#messages.appendChild(messageElement)
             }
 
