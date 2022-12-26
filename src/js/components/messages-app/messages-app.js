@@ -9,15 +9,30 @@
 const template = document.createElement('template')
 template.innerHTML = `
 <style>
+    
     .hidden {
         display:none;
     }
 
     .messages {
-        overflow-y: scroll;
-        height: 200px;
-        padding: 5px;
-        border: 5px solid pink;
+        /* To fix */
+        height: 90%;
+        overflow-y: auto;
+    }
+
+    #messages-form > #messages-input,
+    #username-form > #username-input {
+        width: 80%;
+        background-color:pink;
+        border: none;
+        height: 20px;
+        border-radius: 10px;
+    }
+
+    button {
+        background-color: pink;
+        border-radius: 10px;        
+        padding: 3px 10px 3px 10px;
     }
 
 

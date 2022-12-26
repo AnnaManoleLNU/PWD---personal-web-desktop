@@ -42,7 +42,9 @@ template.innerHTML = `
     /* Style for the window app content */
     .window-app-content {
       flex: 1;
-      overflow-y: auto;
+      /* To fix */
+      overflow: auto;
+      overflow-x: hidden;
       padding: 10px;
       box-sizing: border-box;
     }
@@ -55,6 +57,13 @@ template.innerHTML = `
     .window-app-content::-webkit-scrollbar-thumb {
      background-color: white; /* Color of the thumb (the part that you drag) */
 }
+    ::slotted(memory-app) {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      height: 100%;
+    }
   </style>
   <div class="window-app">
     <div class="window-app-header">
@@ -83,7 +92,6 @@ customElements.define('window-app',
 
             // selectors
             this.#slot = this.shadowRoot.querySelector('slot')
-            console.log(this.#slot)
         }
 
 

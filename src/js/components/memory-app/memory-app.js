@@ -5,115 +5,40 @@
  * @version 1.1.0
  */
 
+import '../memory-tile/index.js'
+
 // Define template.
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    :host {
-        display: block;
-        height: 100px;
-        width: 80px;
-        perspective: 1000px;
-        position: relative;
+    .hidden {
+        display:none;
     }
 
-    :host([hidden]) #tile {
-        cursor: default;
-        pointer-events: none;
-        box-shadow: none;
-        border-style: dotted;
-        border-color: #858585;
-    }
-    
-    :host([hidden]) #tile>* {
-        visibility: hidden;
-    }
-
-    /* flipping */
-    :host([face-up]) #tile {
-      transform: rotateY(180deg);
-    }
-
-    #tile {
-      display: inline-block;
-      height: 100%;
-      width: 100%;
-      padding:0;
-      border: solid 1px #767676;
-      border-radius: 10px;
-      outline: none;
-      background-color: #fff;
+    p:hover {
+      color: pink;
       cursor: pointer;
-      box-shadow: 0px 0 10px #ccc;
-      /* flipping */
-      transform-style: preserve-3d;
-      transition: 1s;
     }
 
-    #tile:focus {
-      border-color: #000;
-      box-shadow: 0px 0 10px black;
-    }
-
-    #tile[disabled] {
-      cursor: default;
-      pointer-events: none;
-      box-shadow: none;
-      border-style: dashed;
-      border-color: #858585;
-    }
-
-    #front,
-    #back {
-      width: calc(100% - 4px);
-      height: calc(100% - 4px);
-      border-radius: 8px;
-      margin:2px;
-      /* flipping */
-      position: absolute;
-      top:0;
-      left:0;
-      backface-visibility: hidden;
-    }
-
-    #front {
-      background-color:#fff;
-      /* flipping */
-      transform: rotateY(180deg);
-    }
-
-    #back {
-      background-color:pink;
-    }
-
-    slot {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    /* Styles any content in the slot element.  */
-    slot>* {
-        max-width: 80%;
-        max-height: 80%;
-    }
- 
-    /* Styles slotted images.  */
-    ::slotted(img) {
-        max-width: 80%;
-        max-height: 80%;
+     .options {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
     }
 
   </style>
+  <div class="options">
+    <h1>Memory game</h1>
+    <h3>Select game mode</h3>
+      <p id="twobytwo">2x2</p>
+      <p id="fourbytwo">4x2</p>
+      <p id="fourbyfour">4x4</p>
+  </div>
+
+  <div class="game" class="hidden">
+  </div>
   
-  <button part="tile-main" id="tile">
-    <div part="tile-front" id="front">
-      <slot></slot>
-    </div>
-    <div part="tile-back" id="back"></div>
-  </button>
 `
 
 customElements.define('memory-app',
@@ -121,15 +46,20 @@ customElements.define('memory-app',
    * Represents a flipping tile.
    */
   class extends HTMLElement {
-    /**
-     * The element representing the tile.
-     */
-    #tile
+    #options
+
+    #game
+
+    #twobytwo
+
+    #fourbytwo
+
+    #fourbyfour
 
     /**
      * Creates an instance of the current type.
      */
-    constructor () {
+    constructor() {
       super()
 
       // Attach a shadow DOM tree to this element and
@@ -138,90 +68,89 @@ customElements.define('memory-app',
         .appendChild(template.content.cloneNode(true))
 
       // Get the tile element in the shadow root.
-      this.#tile = this.shadowRoot.querySelector('#tile')
+      this.#options = this.shadowRoot.querySelector('.options')
+      this.#game = this.shadowRoot.querySelector('.game')
+      this.#twobytwo = this.shadowRoot.querySelector('#twobytwo')
+      this.#fourbytwo = this.shadowRoot.querySelector('#fourbytwo')
+      this.#fourbyfour = this.shadowRoot.querySelector('#fourbyfour')
 
       // Listen to click events.
-      this.addEventListener('click', (event) => {
-        // Flip if main button, no other button or key pressed.
-        // Q: Vad är poängen med allt detta?
-        if (event.button === 0 &&
-          event.buttons < 2 &&
-          !event.altKey &&
-          !event.ctrlKey &&
-          !event.metaKey &&
-          !event.shiftKey) {
-          this.#flip()
-        }
+      this.#twobytwo.addEventListener('click', (event) => {
+        event.preventDefault()
+        this.#options.setAttribute('class', 'hidden')
+        this.#game.removeAttribute('hidden')
+        this.#twoByTwo()
+      })
+
+      this.#fourbytwo.addEventListener('click', (event) => {
+        event.preventDefault()
+        this.#options.setAttribute('class', 'hidden')
+        this.#game.removeAttribute('hidden')
+        this.#fourByTwo()
+      })
+
+      this.#fourbyfour.addEventListener('click', (event) => {
+        event.preventDefault()
+        this.#options.setAttribute('class', 'hidden')
+        this.#game.removeAttribute('hidden')
+        this.#fourByFour()
       })
     }
 
-    /**
-     * Attributes to monitor for changes.
-     *
-     * @returns {string[]} A string array of attributes to monitor.
-     */
-    static get observedAttributes () {
-      return ['face-up', 'disabled', 'hidden']
-    }
+    #twoByTwo() {
+      // Create an array of tiles
+      const tiles = []
+      for (let i = 0; i < 4; i++) {
+        const tile = document.createElement('memory-tile');
+        tiles.push(tile)
+      }
 
-    /**
-     * Called when observed attribute(s) changes.
-     *
-     * @param {string} name - The attribute's name.
-     * @param {*} oldValue - The old value.
-     * @param {*} newValue - The new value.
-     */
-    attributeChangedCallback (name, oldValue, newValue) {
-      // Enable or disable the button inside the shadow DOM.
-      if ((name === 'disabled' || name === 'hidden') &&
-          oldValue !== newValue) {
-        // Determine if the disabled attribute should be present or absent.
-        // Q: Vad gör denna rad kod?
-        const isPresent = Boolean(newValue) || newValue === ''
-
-        if (isPresent) {
-          this.#tile.setAttribute('disabled', '')
-          this.blur()
-        } else {
-          this.#tile.removeAttribute('disabled')
+      // Append the tiles to the game container, two tiles per row
+      for (let i = 0; i < 4; i++) {
+        const row = document.createElement('div')
+        row.appendChild(tiles[i])
+        if (i % 2 !== 0) {
+          row.appendChild(tiles[i - 1])
         }
+        this.#game.appendChild(row)
       }
     }
 
-    /**
-     * Specifies whether this instance contains the same content as another tile.
-     *
-     * @param {*} other - The tile to test for equality
-     * @returns {boolean} true if other has the same content as this tile instance.
-     */
-    isEqual (other) {
-      return this.isEqualNode(other)
+    #fourByTwo() {
+      const tiles = []
+      for (let i = 0; i < 8; i++) {
+        const tile = document.createElement('memory-tile')
+        tiles.push(tile)
+      }
+      // four tiles per two rows
+      for (let i = 0; i < 8; i += 4) {
+        const row = document.createElement('div')
+        row.appendChild(tiles[i])
+        row.appendChild(tiles[i + 1])
+        row.appendChild(tiles[i + 2])
+        row.appendChild(tiles[i + 3])
+        this.#game.appendChild(row)
+      }
     }
 
-    /**
-     * Compare cards to see if they are equal and disable them face up if they are.
-     */
-
-    /**
-     * Flips the current instance, if it is not disabled.
-     */
-    #flip () {
-      // Do not do anything if the element is disabled or hidden.
-      if (this.hasAttribute('disabled') ||
-        this.hasAttribute('hidden')) {
-        return
+    #fourByFour () {
+      const tiles = []
+      for (let i = 0; i < 16; i++) {
+        const tile = document.createElement('memory-tile')
+        tiles.push(tile)
       }
 
-      // Toggle the face-up attribute.
-      this.hasAttribute('face-up')
-        ? this.removeAttribute('face-up')
-        : this.setAttribute('face-up', '')
-
-      // Raise the my-flipping-tile-extra:flip event.
-      this.dispatchEvent(new CustomEvent('flip', {
-        bubbles: true,
-        detail: { faceUp: this.hasAttribute('face-up') }
-      }))
+      // four tiles per four rows
+      for (let i = 0; i < 16; i+=4) {
+        const row = document.createElement('div')
+        row.appendChild(tiles[i])
+        row.appendChild(tiles[i + 1])
+        row.appendChild(tiles[i + 2])
+        row.appendChild(tiles[i + 3])
+        this.#game.appendChild(row)
+      }
     }
+
+
   }
 )
