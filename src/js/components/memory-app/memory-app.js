@@ -30,7 +30,7 @@ template.innerHTML = `
   </style>
   <div class="options">
     <h1>Memory game</h1>
-    <h3>Select game mode</h3>
+    <h3>Select game difficulty</h3>
       <p id="twobytwo">2x2</p>
       <p id="fourbytwo">4x2</p>
       <p id="fourbyfour">4x4</p>

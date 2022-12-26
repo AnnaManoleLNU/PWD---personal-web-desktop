@@ -21,5 +21,9 @@
   "devDependencies": {
     "@lnu/eslint-config": "^1.1.7",
     "vite": "^3.2.4"
+  },
+  "dependencies": {
+    "emoji-mart": "^5.4.0",
+    "emoji-picker-element": "^1.14.1"
   }
 }

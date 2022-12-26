@@ -5,6 +5,8 @@
  * @version 1.1.0
  */
 
+import { Picker } from 'emoji-picker-element'
+
 // Define template
 const template = document.createElement('template')
 template.innerHTML = `
@@ -22,10 +24,10 @@ template.innerHTML = `
 
     #messages-form > #messages-input,
     #username-form > #username-input {
-        width: 80%;
+        width: 70%;
         background-color:pink;
         border: none;
-        height: 20px;
+        height: 22px;
         border-radius: 10px;
     }
 
@@ -43,10 +45,11 @@ template.innerHTML = `
     <input type="text" id="username-input" placeholder="Enter your username">
     <button type="submit">Submit</button>
 </form>
-<form id="messages-form" class="hidden">
-    <input id="messages-input" type="text" placeholder="Enter your message">
-    <button type="submit">Send</button>
-</form>
+    <form id="messages-form" class="hidden">
+        <input id="messages-input" type="text" placeholder="Enter your message">
+        <button id="emoji-button" type="button">😀</button>
+        <button type="submit">Send</button>
+    </form>
 `
 
 customElements.define('messages-app',
@@ -65,6 +68,8 @@ customElements.define('messages-app',
         #messages
 
         #socket
+
+        #emojiButton
 
         constructor() {
             super()
@@ -87,15 +92,18 @@ customElements.define('messages-app',
             // For when a username exists already from local storage
             this.#username = localStorage.getItem('username')
 
+            // emoji support
+            this.#emojiButton = this.shadowRoot.querySelector('#emoji-button')
+
             // Check if a username does not exist in the local storage and if not show the username form so the user can populate the local storage
             if (!this.#username) {
                 this.#usernameForm.removeAttribute('class', 'hidden')
-              } else {
+            } else {
                 // If the username is stored, hide the username form and show the messages form
                 this.#usernameForm.setAttribute('class', 'hidden')
                 this.#messagesForm.removeAttribute('class', 'hidden')
-              }
-            
+            }
+
             // Event listeners
             // Event listener for submitting username
             this.#usernameForm.addEventListener('submit', event => {
@@ -103,11 +111,11 @@ customElements.define('messages-app',
                 this.#username = this.#usernameInput.value
 
                 localStorage.setItem('username', this.#username)
-                
+
                 this.#usernameForm.setAttribute('class', 'hidden')
                 this.#messagesForm.removeAttribute('class', 'hidden')
             })
-        
+
 
             // Event listener for submitting message 
             this.#messagesForm.addEventListener('submit', event => {
@@ -128,10 +136,21 @@ customElements.define('messages-app',
             this.#socket = new WebSocket('wss://courselab.lnu.se/message-app/socket')
             this.#socket.addEventListener('message', event => this.#handleMessage(event))
 
+            // Emoji support
+            this.#emojiButton.addEventListener('click', (event) => {
+               const picker = new Picker()
+               this.#messagesForm.appendChild(picker)
+               picker.addEventListener('emoji-click', emoji => {
+                this.#messagesInput.value += emoji.detail.unicode
+               })
+              
+               
+            })
+
         } // CONSTRUCTOR END
 
         connectedCallback() {
-            
+
         }
 
         #handleMessage(event) {
