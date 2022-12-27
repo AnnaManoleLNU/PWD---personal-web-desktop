@@ -22,6 +22,11 @@ template.innerHTML = `
         overflow-y: auto;
     }
 
+    form {
+        display: flex;
+        justify-content: space-evenly;   
+    }
+
     #messages-form > #messages-input,
     #username-form > #username-input {
         width: 70%;
@@ -34,9 +39,31 @@ template.innerHTML = `
     button {
         background-color: pink;
         border-radius: 10px;        
-        padding: 3px 10px 3px 10px;
+        padding: 2px 10px 2px 10px;
     }
 
+    #emoji-picker-container {
+        position: absolute;
+        left: 0;
+        top: 10;
+        height: 200px;
+    }
+
+    #emoji-button {
+        position: relative;
+    }
+
+    #emoji-picker-container {
+        position: absolute;
+        height: 200px;
+        top: -200px;
+        left: -310px;
+    }
+
+    emoji-picker {
+        width: 100%;
+        height: 100%;
+    }
 
 </style>
 <div class="messages" class="hidden"></div>
@@ -45,11 +72,13 @@ template.innerHTML = `
     <input type="text" id="username-input" placeholder="Enter your username">
     <button type="submit">Submit</button>
 </form>
-    <form id="messages-form" class="hidden">
-        <input id="messages-input" type="text" placeholder="Enter your message">
-        <button id="emoji-button" type="button">😀</button>
+<form id="messages-form" class="hidden">
+    <input id="messages-input" type="text" placeholder="Enter your message">
+    <button id="emoji-button" type="button">😀
+        <div id="emoji-picker-container"></div>
+    </button>
         <button type="submit">Send</button>
-    </form>
+</form>
 `
 
 customElements.define('messages-app',
@@ -70,6 +99,10 @@ customElements.define('messages-app',
         #socket
 
         #emojiButton
+
+        #picker
+
+        #emojiPickerContainer
 
         constructor() {
             super()
@@ -94,6 +127,10 @@ customElements.define('messages-app',
 
             // emoji support
             this.#emojiButton = this.shadowRoot.querySelector('#emoji-button')
+            this.#picker = new Picker()
+            this.#emojiPickerContainer = this.shadowRoot.querySelector('#emoji-picker-container')
+            this.#emojiPickerContainer.appendChild(this.#picker)
+            // this.#emojiPickerContainer.setAttribute('class', 'hidden')
 
             // Check if a username does not exist in the local storage and if not show the username form so the user can populate the local storage
             if (!this.#username) {
@@ -114,6 +151,7 @@ customElements.define('messages-app',
 
                 this.#usernameForm.setAttribute('class', 'hidden')
                 this.#messagesForm.removeAttribute('class', 'hidden')
+                this.#emojiPickerContainer.setAttribute('class', 'hidden')
             })
 
 
@@ -136,22 +174,25 @@ customElements.define('messages-app',
             this.#socket = new WebSocket('wss://courselab.lnu.se/message-app/socket')
             this.#socket.addEventListener('message', event => this.#handleMessage(event))
 
-            // Emoji support
-            this.#emojiButton.addEventListener('click', (event) => {
-               const picker = new Picker()
-               this.#messagesForm.appendChild(picker)
-               picker.addEventListener('emoji-click', emoji => {
+            // Picker event listener
+            this.#picker.addEventListener('emoji-click', emoji => {
                 this.#messagesInput.value += emoji.detail.unicode
-               })
-              
-               
             })
 
+            // Emoji support            
+            let pickerVisible = false
+            this.#emojiButton.addEventListener('click', (event) => {
+                this.#emojiPickerContainer.classList.toggle('hidden')
+                pickerVisible = true
+            })
+
+            // Stop propagation, so that the picker does not get closed on clicking on the tabs
+            this.#emojiPickerContainer.addEventListener('click', event => {
+                event.stopPropagation()
+            })
+
+
         } // CONSTRUCTOR END
-
-        connectedCallback() {
-
-        }
 
         #handleMessage(event) {
             const message = JSON.parse(event.data)
