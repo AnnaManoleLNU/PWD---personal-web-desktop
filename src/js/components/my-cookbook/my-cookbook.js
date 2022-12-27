@@ -25,14 +25,11 @@ template.innerHTML = `
     }
 
     #recipelist {
-        padding-top: 50px;
+        padding-top: 30px;
     }
-
-    .recipelist {
-        display:flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
+    
+    .recipe-item {        
+        text-align: center;
     }
 
     ul {
@@ -44,7 +41,7 @@ template.innerHTML = `
        color: pink;
     }
 
-    .recipelist:hover {
+    .recipe-item:hover {
         color: pink;
         cursor: pointer;
     }
@@ -122,13 +119,13 @@ customElements.define('my-cookbook',
                 // Recipe titles
                 const selectedRecipeTitle = recipe.meals[0].strMeal
                 this.#recipe = document.createElement('p')
-                this.#recipe.textContent = selectedRecipeTitle
+                this.#recipe.textContent = selectedRecipeTitle 
                 this.#recipeList.appendChild(this.#recipe)
-                this.#recipe.setAttribute('class', 'recipelist')
+                this.#recipe.setAttribute('class', 'recipe-item')
 
                 // create ingredient list 
                 const ingredientList = this.createIngredientList(recipe.meals[0])
-                
+
                 // Event listener for clicking on a recipe
                 this.#recipe.addEventListener('click', (event) => {
                     event.preventDefault()

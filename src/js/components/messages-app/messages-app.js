@@ -29,8 +29,8 @@ template.innerHTML = `
         justify-content: space-evenly;   
     }
 
-    #messages-form > #messages-input,
-    #username-form > #username-input {
+     #messages-input,
+     #username-input {
         width: 70%;
         background-color:pink;
         border: none;
