@@ -15,6 +15,10 @@ template.innerHTML = `
         display:none;
     }
 
+    h1 {
+      color: pink;
+    }
+
     p:hover {
       color: pink;
       cursor: pointer;
@@ -79,78 +83,40 @@ customElements.define('memory-app',
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('hidden')
-        this.#twoByTwo()
+        this.#createTiles(2, 2)
       })
 
       this.#fourbytwo.addEventListener('click', (event) => {
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('hidden')
-        this.#fourByTwo()
+        this.#createTiles(4, 2)
       })
 
       this.#fourbyfour.addEventListener('click', (event) => {
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('hidden')
-        this.#fourByFour()
+        this.#createTiles(4, 4)
       })
     }
 
-    #twoByTwo() {
-      // Create an array of tiles
+    #createTiles(numberOfColumns, numberOfRows) {
+      // create an array of tiles
       const tiles = []
-      for (let i = 0; i < 4; i++) {
-        const tile = document.createElement('memory-tile');
+      for (let i = 0; i < numberOfColumns * numberOfRows; i++) {
+        const tile = document.createElement('memory-tile')
         tiles.push(tile)
       }
 
-      // Append the tiles to the game container, two tiles per row
-      for (let i = 0; i < 4; i++) {
+      for (let i = 0; i < numberOfColumns * numberOfRows; i += numberOfColumns) {
         const row = document.createElement('div')
-        row.appendChild(tiles[i])
-        if (i % 2 !== 0) {
-          row.appendChild(tiles[i - 1])
+        for (let j = 0; j < numberOfColumns; j++) {
+          row.appendChild(tiles[i + j])
         }
         this.#game.appendChild(row)
       }
     }
-
-    #fourByTwo() {
-      const tiles = []
-      for (let i = 0; i < 8; i++) {
-        const tile = document.createElement('memory-tile')
-        tiles.push(tile)
-      }
-      // four tiles per two rows
-      for (let i = 0; i < 8; i += 4) {
-        const row = document.createElement('div')
-        row.appendChild(tiles[i])
-        row.appendChild(tiles[i + 1])
-        row.appendChild(tiles[i + 2])
-        row.appendChild(tiles[i + 3])
-        this.#game.appendChild(row)
-      }
-    }
-
-    #fourByFour () {
-      const tiles = []
-      for (let i = 0; i < 16; i++) {
-        const tile = document.createElement('memory-tile')
-        tiles.push(tile)
-      }
-
-      // four tiles per four rows
-      for (let i = 0; i < 16; i+=4) {
-        const row = document.createElement('div')
-        row.appendChild(tiles[i])
-        row.appendChild(tiles[i + 1])
-        row.appendChild(tiles[i + 2])
-        row.appendChild(tiles[i + 3])
-        this.#game.appendChild(row)
-      }
-    }
-
 
   }
 )

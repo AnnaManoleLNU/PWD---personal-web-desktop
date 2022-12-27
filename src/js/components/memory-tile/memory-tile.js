@@ -113,7 +113,7 @@ template.innerHTML = `
 
 customElements.define('memory-tile',
   /**
-   * Represents a flipping tile.
+   * Represents a memory tile.
    */
   class extends HTMLElement {
     /**
@@ -148,7 +148,6 @@ customElements.define('memory-tile',
         }
       })
     }
-
 
     /**
      * Attributes to monitor for changes.
