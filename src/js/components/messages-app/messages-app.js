@@ -10,16 +10,18 @@ import { Picker } from 'emoji-picker-element'
 // Define template
 const template = document.createElement('template')
 template.innerHTML = `
-<style>
-    
+<style>   
     .hidden {
         display:none;
     }
 
     .messages {
-        /* To fix */
         height: 90%;
         overflow-y: auto;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        max-width: 495px; 
     }
 
     form {
@@ -75,7 +77,7 @@ template.innerHTML = `
 <form id="messages-form" class="hidden">
     <input id="messages-input" type="text" placeholder="Enter your message">
     <button id="emoji-button" type="button">😀
-        <div id="emoji-picker-container"></div>
+        <div id="emoji-picker-container" class="hidden"></div>
     </button>
         <button type="submit">Send</button>
 </form>
@@ -142,6 +144,7 @@ customElements.define('messages-app',
             }
 
             // Event listeners
+
             // Event listener for submitting username
             this.#usernameForm.addEventListener('submit', event => {
                 event.preventDefault()
@@ -151,7 +154,6 @@ customElements.define('messages-app',
 
                 this.#usernameForm.setAttribute('class', 'hidden')
                 this.#messagesForm.removeAttribute('class', 'hidden')
-                this.#emojiPickerContainer.setAttribute('class', 'hidden')
             })
 
 
