@@ -22,6 +22,7 @@ template.innerHTML = `
         word-wrap: break-word;
         white-space: pre-wrap;
         max-width: 495px; 
+        padding-bottom: 10px;
     }
 
     form {
@@ -170,22 +171,27 @@ customElements.define('messages-app',
                 this.#socket.send(JSON.stringify(data))
 
                 this.#messagesInput.value = ''
-            })
 
+                
+            })
+            
             // Socket message event
             this.#socket = new WebSocket('wss://courselab.lnu.se/message-app/socket')
-            this.#socket.addEventListener('message', event => this.#handleMessage(event))
+            this.#socket.addEventListener('message', event => {
+                this.#handleMessage(event)
+                // auto scroll when messages div fills
+                this.#messages.scrollTop = this.#messages.scrollHeight
+            }
+            )
 
             // Picker event listener
             this.#picker.addEventListener('emoji-click', emoji => {
                 this.#messagesInput.value += emoji.detail.unicode
             })
 
-            // Emoji support            
-            let pickerVisible = false
+            // Emoji support                        
             this.#emojiButton.addEventListener('click', (event) => {
                 this.#emojiPickerContainer.classList.toggle('hidden')
-                pickerVisible = true
             })
 
             // Stop propagation, so that the picker does not get closed on clicking on the tabs
