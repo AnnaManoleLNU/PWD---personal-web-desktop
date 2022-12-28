@@ -86,6 +86,7 @@ customElements.define('memory-app',
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('hidden')
         this.#createTiles(2, 2)
+        this.#shuffleImages()
       })
 
       this.#fourbytwo.addEventListener('click', (event) => {
@@ -93,6 +94,7 @@ customElements.define('memory-app',
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('hidden')
         this.#createTiles(4, 2)
+        this.#shuffleImages()
       })
 
       this.#fourbyfour.addEventListener('click', (event) => {
@@ -100,13 +102,9 @@ customElements.define('memory-app',
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('hidden')
         this.#createTiles(4, 4)
+        this.#shuffleImages()
       })
 
-      // my test 
-      const h = this.shadowRoot.querySelector('h3')
-      h.addEventListener('click', (event) => {
-        this.#getRandomImage()
-      })
     }
 
     #createTiles(numberOfColumns, numberOfRows) {
@@ -127,6 +125,7 @@ customElements.define('memory-app',
         for (let j = 0; j < numberOfColumns; j++) {
           row.appendChild(tiles[i + j])
         }
+
         this.#game.appendChild(row)
       }
     }
@@ -141,6 +140,8 @@ customElements.define('memory-app',
       console.log(this.#images)
       console.log(randomImage)
       return randomImage
+
+      // !!! REMEMBER that if you press play again it should reset the array of images
     }
     /**
      * Create a slotted image with the img source from #getRandomImage
@@ -152,6 +153,42 @@ customElements.define('memory-app',
       const source = this.#getRandomImage()
       imgSlot.setAttribute('src', source)
       return imgSlot
+    }
+
+    #shuffleImages() {
+      const tiles = this.#game.querySelectorAll('memory-tile')
+      const srcs = []
+
+      for (const tile of tiles) {
+        const img = tile.firstChild
+        const src = img.getAttribute('src')
+        srcs.push(src)
+      }
+      
+      const shuffledScrs = this.#shuffleArray(srcs)
+
+      let index = 0
+      for (const tile of tiles) {
+        const img = tile.firstChild
+        img.setAttribute('src', shuffledScrs[index])
+        index++
+      }
+    }
+    /**
+     * Shuffle an array with the Fisher-Yates algorithm.
+     *
+     * @param {*} array 
+     * @returns array
+     */
+    #shuffleArray(array) {
+      // Fisher-Yates shuffle algorithm
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1))
+        const temp = array[i]
+        array[i] = array[j]
+        array[j] = temp
+      }
+      return array
     }
   }
 )
