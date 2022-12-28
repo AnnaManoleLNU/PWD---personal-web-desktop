@@ -106,6 +106,8 @@ customElements.define('memory-app',
       const tiles = []
       for (let i = 0; i < numberOfColumns * numberOfRows; i++) {
         const tile = document.createElement('memory-tile')
+        const imgSlot = this.#createSlottedImages()
+        tile.appendChild(imgSlot)
         tiles.push(tile)
       }
 
@@ -118,5 +120,26 @@ customElements.define('memory-app',
       }
     }
 
+    /**
+     * Get a random image from an array of images
+     */
+    #getRandomImage() {
+      const images = ['/img/cake.png', '/img/sundae.png', '/img/sushi.png', '/img/boba.png', '/img/pizza.png', '/img/hotdog.png', '/img/icecream.png', '/img/coffee.png']
+      const randomIndex = Math.floor(Math.random() * images.length)
+      const randomImage = images[randomIndex]
+      return randomImage
+    }
+    /**
+     * Get an array of two slotted images, one the original and one a clone.
+     * 
+     * @returns 
+     */
+    #createSlottedImages() {
+
+      const imgSlot = document.createElement('img')
+      const source = this.#getRandomImage()
+      imgSlot.setAttribute('src', source)
+      return imgSlot
+    }
   }
 )
