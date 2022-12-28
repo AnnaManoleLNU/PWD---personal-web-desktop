@@ -60,6 +60,8 @@ customElements.define('memory-app',
 
     #fourbyfour
 
+    #images = ['/img/cake.png', '/img/sundae.png', '/img/sushi.png', '/img/boba.png', '/img/pizza.png', '/img/hotdog.png', '/img/icecream.png', '/img/coffee.png']
+
     /**
      * Creates an instance of the current type.
      */
@@ -99,19 +101,19 @@ customElements.define('memory-app',
         this.#game.removeAttribute('hidden')
         this.#createTiles(4, 4)
       })
+
+      // my test 
+      const h = this.shadowRoot.querySelector('h3')
+      h.addEventListener('click', (event) => {
+        this.#getRandomImage()
+      })
     }
 
     #createTiles(numberOfColumns, numberOfRows) {
       // create an array of tiles
       const tiles = []
-      // for (let i = 0; i < numberOfColumns * numberOfRows; i++) {
-      //   const tile = document.createElement('memory-tile')
-      //   const imgSlot = this.#createSlottedImage()
-      //   tile.appendChild(imgSlot)
-      //   tiles.push(tile)
-      // }
 
-      for (let i = 0; i < (numberOfColumns * numberOfRows)/2; i++) {
+      for (let i = 0; i < (numberOfColumns * numberOfRows) / 2; i++) {
         const tile = document.createElement('memory-tile')
         const imgSlot = this.#createSlottedImage()
         tile.appendChild(imgSlot)
@@ -130,12 +132,14 @@ customElements.define('memory-app',
     }
 
     /**
-     * Get a random image from an array of images
+     * Get a random image from an array of images. When an image has been used it gets pushed into an array of used images.
      */
     #getRandomImage() {
-      const images = ['/img/cake.png', '/img/sundae.png', '/img/sushi.png', '/img/boba.png', '/img/pizza.png', '/img/hotdog.png', '/img/icecream.png', '/img/coffee.png']
-      const randomIndex = Math.floor(Math.random() * images.length)
-      const randomImage = images[randomIndex]
+      let randomIndex = Math.floor(Math.random() * this.#images.length)
+      let randomImage = this.#images[randomIndex]
+      this.#images.splice(randomIndex, 1)
+      console.log(this.#images)
+      console.log(randomImage)
       return randomImage
     }
     /**
