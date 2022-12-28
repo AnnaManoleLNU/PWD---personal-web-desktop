@@ -104,11 +104,20 @@ customElements.define('memory-app',
     #createTiles(numberOfColumns, numberOfRows) {
       // create an array of tiles
       const tiles = []
-      for (let i = 0; i < numberOfColumns * numberOfRows; i++) {
+      // for (let i = 0; i < numberOfColumns * numberOfRows; i++) {
+      //   const tile = document.createElement('memory-tile')
+      //   const imgSlot = this.#createSlottedImage()
+      //   tile.appendChild(imgSlot)
+      //   tiles.push(tile)
+      // }
+
+      for (let i = 0; i < (numberOfColumns * numberOfRows)/2; i++) {
         const tile = document.createElement('memory-tile')
-        const imgSlot = this.#createSlottedImages()
+        const imgSlot = this.#createSlottedImage()
         tile.appendChild(imgSlot)
+        const clonedTile = tile.cloneNode(true)
         tiles.push(tile)
+        tiles.push(clonedTile)
       }
 
       for (let i = 0; i < numberOfColumns * numberOfRows; i += numberOfColumns) {
@@ -130,12 +139,11 @@ customElements.define('memory-app',
       return randomImage
     }
     /**
-     * Get an array of two slotted images, one the original and one a clone.
+     * Create a slotted image with the img source from #getRandomImage
      * 
      * @returns 
      */
-    #createSlottedImages() {
-
+    #createSlottedImage() {
       const imgSlot = document.createElement('img')
       const source = this.#getRandomImage()
       imgSlot.setAttribute('src', source)
