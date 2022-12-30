@@ -62,6 +62,8 @@ customElements.define('memory-app',
 
     #images = ['/img/cake.png', '/img/sundae.png', '/img/sushi.png', '/img/boba.png', '/img/pizza.png', '/img/hotdog.png', '/img/icecream.png', '/img/coffee.png']
 
+    #tiles
+
     /**
      * Creates an instance of the current type.
      */
@@ -79,6 +81,7 @@ customElements.define('memory-app',
       this.#twobytwo = this.shadowRoot.querySelector('#twobytwo')
       this.#fourbytwo = this.shadowRoot.querySelector('#fourbytwo')
       this.#fourbyfour = this.shadowRoot.querySelector('#fourbyfour')
+      this.#tiles = this.shadowRoot.querySelectorAll('memory-tile')
 
       // Listen to click events.
       this.#twobytwo.addEventListener('click', (event) => {
@@ -95,6 +98,8 @@ customElements.define('memory-app',
         this.#game.removeAttribute('hidden')
         this.#createTiles(4, 2)
         this.#shuffleImages()
+        this.gameLogic()
+
       })
 
       this.#fourbyfour.addEventListener('click', (event) => {
@@ -105,29 +110,40 @@ customElements.define('memory-app',
         this.#shuffleImages()
       })
 
-    }
+
+    } // CONSTRUCTOR END  
+
+    gameLogic() {
+      for (const tile of this.#tiles) {
+        tile.addEventListener('flip', event => {        
+            console.log(event.detail)          
+        })
+      }
+  }
 
     #createTiles(numberOfColumns, numberOfRows) {
       // create an array of tiles
-      const tiles = []
+      this.#tiles = []
 
       for (let i = 0; i < (numberOfColumns * numberOfRows) / 2; i++) {
         const tile = document.createElement('memory-tile')
         const imgSlot = this.#createSlottedImage()
         tile.appendChild(imgSlot)
         const clonedTile = tile.cloneNode(true)
-        tiles.push(tile)
-        tiles.push(clonedTile)
+        this.#tiles.push(tile)
+        this.#tiles.push(clonedTile)
       }
 
       for (let i = 0; i < numberOfColumns * numberOfRows; i += numberOfColumns) {
         const row = document.createElement('div')
         for (let j = 0; j < numberOfColumns; j++) {
-          row.appendChild(tiles[i + j])
+          row.appendChild(this.#tiles[i + j])
         }
 
         this.#game.appendChild(row)
       }
+
+
     }
 
     /**
@@ -137,8 +153,6 @@ customElements.define('memory-app',
       let randomIndex = Math.floor(Math.random() * this.#images.length)
       let randomImage = this.#images[randomIndex]
       this.#images.splice(randomIndex, 1)
-      console.log(this.#images)
-      console.log(randomImage)
       return randomImage
 
       // !!! REMEMBER that if you press play again it should reset the array of images
@@ -156,23 +170,25 @@ customElements.define('memory-app',
     }
 
     #shuffleImages() {
-      const tiles = this.#game.querySelectorAll('memory-tile')
+      this.#tiles = this.#game.querySelectorAll('memory-tile')
       const srcs = []
 
-      for (const tile of tiles) {
+      for (const tile of this.#tiles) {
         const img = tile.firstChild
         const src = img.getAttribute('src')
         srcs.push(src)
       }
-      
+
       const shuffledScrs = this.#shuffleArray(srcs)
 
       let index = 0
-      for (const tile of tiles) {
+      for (const tile of this.#tiles) {
         const img = tile.firstChild
         img.setAttribute('src', shuffledScrs[index])
         index++
       }
+
+
     }
     /**
      * Shuffle an array with the Fisher-Yates algorithm.

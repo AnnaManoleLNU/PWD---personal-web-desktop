@@ -124,7 +124,7 @@ customElements.define('memory-tile',
     /**
      * Creates an instance of the current type.
      */
-    constructor () {
+    constructor() {
       super()
 
       // Attach a shadow DOM tree to this element and
@@ -149,12 +149,13 @@ customElements.define('memory-tile',
       })
     }
 
+
     /**
      * Attributes to monitor for changes.
      *
      * @returns {string[]} A string array of attributes to monitor.
      */
-    static get observedAttributes () {
+    static get observedAttributes() {
       return ['face-up', 'disabled', 'hidden']
     }
 
@@ -165,10 +166,10 @@ customElements.define('memory-tile',
      * @param {*} oldValue - The old value.
      * @param {*} newValue - The new value.
      */
-    attributeChangedCallback (name, oldValue, newValue) {
+    attributeChangedCallback(name, oldValue, newValue) {
       // Enable or disable the button inside the shadow DOM.
       if ((name === 'disabled' || name === 'hidden') &&
-          oldValue !== newValue) {
+        oldValue !== newValue) {
         // Determine if the disabled attribute should be present or absent.
         const isPresent = Boolean(newValue) || newValue === ''
 
@@ -187,14 +188,14 @@ customElements.define('memory-tile',
      * @param {*} other - The tile to test for equality
      * @returns {boolean} true if other has the same content as this tile instance.
      */
-    isEqual (other) {
+    isEqual(other) {
       return this.isEqualNode(other)
     }
 
     /**
      * Flips the current instance, if it is not disabled.
      */
-    #flip () {
+    #flip() {
       // Do not do anything if the element is disabled or hidden.
       if (this.hasAttribute('disabled') ||
         this.hasAttribute('hidden')) {
@@ -205,6 +206,7 @@ customElements.define('memory-tile',
       this.hasAttribute('face-up')
         ? this.removeAttribute('face-up')
         : this.setAttribute('face-up', '')
+
 
       // Raise the my-flipping-tile-extra:flip event.
       this.dispatchEvent(new CustomEvent('flip', {

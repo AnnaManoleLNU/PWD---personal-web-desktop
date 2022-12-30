@@ -11,6 +11,7 @@ template.innerHTML = `
 <style>
     /* Style for the window app container */
     .window-app {
+      position: absolute;
       display: flex;
       flex-direction: column;
       width: 500px;
@@ -19,7 +20,7 @@ template.innerHTML = `
       border-radius: 5px;
       overflow: hidden;
     }
-
+    
     /* Style for the window app header */
     .window-app-header {
       display: flex;
@@ -38,7 +39,7 @@ template.innerHTML = `
       cursor: pointer;
       background: url('/img/close-icon.png') center/contain no-repeat;
     }
-
+    
     /* Style for the window app content */
     .window-app-content {
       flex: 1;
@@ -50,12 +51,12 @@ template.innerHTML = `
     }
 
     .window-app-content::-webkit-scrollbar {
-     width: 12px; /* Width of the scrollbar */
+      width: 12px; /* Width of the scrollbar */
      background-color: gray; /* Color of the scrollbar */
-}
+    }
 
     .window-app-content::-webkit-scrollbar-thumb {
-     background-color: white; /* Color of the thumb (the part that you drag) */
+      background-color: white; /* Color of the thumb (the part that you drag) */
 }
     ::slotted(memory-app) {
       display: flex;
@@ -64,36 +65,115 @@ template.innerHTML = `
       flex-direction: column;
       height: 100%;
     }
+
+
   </style>
+
+
   <div class="window-app">
     <div class="window-app-header">
-      <div class="window-app-close"></div>
+      <div class="window-app-close">
+
+      </div>
     </div>
     <div class="window-app-content">
       <!-- Other web components can go here -->
       <slot></slot>
     </div>
   </div>
+ 
 
 `
 
 customElements.define('window-app',
 
-    class extends HTMLElement {
-        #slot
+  class extends HTMLElement {
 
-        constructor() {
-            super()
+    #windowAppHeader
 
-            // Attach a shadow DOM tree to this element and
-            // append the template to the shadow root.
-            this.attachShadow({ mode: 'open' })
-                .appendChild(template.content.cloneNode(true))
-
-            // selectors
-            this.#slot = this.shadowRoot.querySelector('slot')
-        }
+    #windowApp
 
 
+    constructor() {
+      super()
+
+
+      // Attach a shadow DOM tree to this element and
+      // append the template to the shadow root.
+      this.attachShadow({ mode: 'open' })
+        .appendChild(template.content.cloneNode(true))
+
+      // selectors
+      this.#windowAppHeader = this.shadowRoot.querySelector('.window-app-header')
+      this.#windowApp = this.shadowRoot.querySelector('.window-app')
+
+      // Flag that indicates whether the element is currently being dragged
+    this.isDragging = false
+
+    // Initial position of the element when the drag starts
+    this.initialX = 0
+    this.initialY = 0
+
+    // Current position of the element
+    this.currentX = 0
+    this.currentY = 0
+
+    // Offset from the initial position
+    this.xOffset = 0
+    this.yOffset = 0
+
+    this.#drag()
+    } // CONSTRUCTOR END 
+
+
+    // Event listener that is called when the user starts dragging the window app.
+    // Sets the initial position and flags the element as being dragged.
+    #handleMouseDown(event) {
+      this.initialX = event.clientX - this.xOffset
+      this.initialY = event.clientY - this.yOffset
+
+      if (event.target === this.#windowAppHeader) {
+        this.isDragging = true
+        this.currentX = event.clientX
+        this.currentY = event.clientY
+      }
     }
+
+    // Event listener that is called when the user releases the mouse button.
+    // Resets the initial position and flags the element as not being dragged.
+    #handleMouseUp() {
+      this.initialX = this.currentX
+      this.initialY = this.currentY
+
+      this.isDragging = false
+    }
+
+    // event listener that is called when the user moves the mouse while dragging the element
+    // update the position of the element based on the mouse movement
+    #handleMouseMove(event) {
+      if (this.isDragging) {
+        event.preventDefault()
+        this.xOffset = event.clientX - this.initialX
+        this.yOffset = event.clientY - this.initialY
+  
+        // maximum and minimum values for the left and top styles
+        const minTop = 0
+        const maxTop = window.innerHeight - this.#windowApp.offsetHeight
+        const minLeft = 0
+        const maxLeft = window.innerWidth - this.#windowApp.offsetWidth
+  
+        // the element stays within the allowed area
+        this.#windowApp.style.top = Math.min(Math.max(this.yOffset, minTop), maxTop) + "px"
+        this.#windowApp.style.left = Math.min(Math.max(this.xOffset, minLeft), maxLeft) + "px"
+      }
+    }
+
+    // mouse down, mouse up, and mouse move events on the window app header element
+    #drag() {
+      this.#windowAppHeader.addEventListener("mousedown", this.#handleMouseDown.bind(this))
+      this.#windowAppHeader.addEventListener("mouseup", this.#handleMouseUp.bind(this))
+      this.#windowAppHeader.addEventListener("mousemove", this.#handleMouseMove.bind(this))
+    }
+
+  }
 )
