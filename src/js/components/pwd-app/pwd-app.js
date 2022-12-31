@@ -101,6 +101,10 @@ customElements.define('pwd-app',
             this.#messsagesApp = this.shadowRoot.querySelector('#app1')
             this.#myCookbook = this.shadowRoot.querySelector('#app2')
             this.#memoryApp = this.shadowRoot.querySelector('#app3')
+
+            // event listeners
+            // closing the application event listener
+            this.addEventListener('closeApp', (event))
         }
 
         /**

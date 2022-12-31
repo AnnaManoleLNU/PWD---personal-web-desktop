@@ -92,6 +92,8 @@ customElements.define('window-app',
 
     #windowApp
 
+    #closeButton
+
 
     constructor() {
       super()
@@ -105,6 +107,7 @@ customElements.define('window-app',
       // selectors
       this.#windowAppHeader = this.shadowRoot.querySelector('.window-app-header')
       this.#windowApp = this.shadowRoot.querySelector('.window-app')
+      this.#closeButton = this.shadowRoot.querySelector('.window-app-close')
 
       // Flag that indicates whether the element is currently being dragged
       this.isDragging = false
@@ -122,6 +125,11 @@ customElements.define('window-app',
       this.yOffset = 0
 
       this.#drag()
+
+      this.#closeButton.addEventListener('click', (event)=> {
+        console.log('i have been clicked')
+        this.closeAppEvent()
+      })
     } // CONSTRUCTOR END 
 
 
@@ -172,6 +180,13 @@ customElements.define('window-app',
       this.#windowAppHeader.addEventListener("mousedown", this.#handleMouseDown.bind(this))
       this.#windowAppHeader.addEventListener("mouseup", this.#handleMouseUp.bind(this))
       this.#windowAppHeader.addEventListener("mousemove", this.#handleMouseMove.bind(this))
+    }
+
+    // close button event
+    closeAppEvent () {
+      this.#closeButton.dispatchEvent(new window.CustomEvent('closeApp', { bubbles: true}))
+      console.log('the app has been closed')
+      this.remove()
     }
 
   }

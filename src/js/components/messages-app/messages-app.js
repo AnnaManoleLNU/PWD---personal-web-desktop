@@ -199,7 +199,6 @@ customElements.define('messages-app',
 
         #handleMessage(event) {
             const message = JSON.parse(event.data)
-            console.log(event.data)
             const messageElement = document.createElement('div')
             const date = new Date()
 
