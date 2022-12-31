@@ -17,19 +17,34 @@ template.innerHTML = `
     
     #taskbar {
         display: flex;
-        gap: 10px;
+        gap: 20px;
         position: fixed;
         bottom: 0;
         left: 0;
         background-color: pink;
-        height: 45px;
+        height: 50px;
         width: 100%;
     }
 
-    .app-icon {   
-        background-color: salmon;
+    #app1 {
+        background-image: url('/img/messages-app.png');
+        background-size: 100%;
+    }
+
+    #app2 {
+        background-image: url('/img/cooking-app.png');
+        background-size: 100%;
+    }
+
+    #app3 {
+        background-image: url('/img/memory-app.png');
+        background-size: 100%;
+    }
+
+    .app-icon {
+        margin: 5px 0px 5px 0px;   
         height: 40px;
-        width: 45px;
+        width: 40px;
     }
 </style>
 
