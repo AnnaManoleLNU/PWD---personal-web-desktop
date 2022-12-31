@@ -16,7 +16,7 @@ template.innerHTML = `
       flex-direction: column;
       width: 500px;
       height: 400px;
-      border: 1px solid pink;
+      border: 5px solid pink;
       border-radius: 5px;
       overflow: hidden;
     }
@@ -27,7 +27,7 @@ template.innerHTML = `
       align-items: center;
       height: 30px;
       background: pink;
-      padding: 0 10px;
+      padding: 0;
       box-sizing: border-box;
     }
 
@@ -43,21 +43,21 @@ template.innerHTML = `
     /* Style for the window app content */
     .window-app-content {
       flex: 1;
-      /* To fix */
       overflow: auto;
       overflow-x: hidden;
-      padding: 10px;
       box-sizing: border-box;
+      background: black;
     }
 
     .window-app-content::-webkit-scrollbar {
       width: 12px; /* Width of the scrollbar */
-     background-color: gray; /* Color of the scrollbar */
+     background-color: rgb(40, 40, 46); /* Color of the scrollbar */
     }
 
     .window-app-content::-webkit-scrollbar-thumb {
-      background-color: white; /* Color of the thumb (the part that you drag) */
-}
+      background-color: white ; /* Color of the thumb (the part that you drag) */
+    }
+    
     ::slotted(memory-app) {
       display: flex;
       align-items: center;
@@ -65,7 +65,6 @@ template.innerHTML = `
       flex-direction: column;
       height: 100%;
     }
-
 
   </style>
 
@@ -108,21 +107,21 @@ customElements.define('window-app',
       this.#windowApp = this.shadowRoot.querySelector('.window-app')
 
       // Flag that indicates whether the element is currently being dragged
-    this.isDragging = false
+      this.isDragging = false
 
-    // Initial position of the element when the drag starts
-    this.initialX = 0
-    this.initialY = 0
+      // Initial position of the element when the drag starts
+      this.initialX = 0
+      this.initialY = 0
 
-    // Current position of the element
-    this.currentX = 0
-    this.currentY = 0
+      // Current position of the element
+      this.currentX = 0
+      this.currentY = 0
 
-    // Offset from the initial position
-    this.xOffset = 0
-    this.yOffset = 0
+      // Offset from the initial position
+      this.xOffset = 0
+      this.yOffset = 0
 
-    this.#drag()
+      this.#drag()
     } // CONSTRUCTOR END 
 
 
@@ -155,13 +154,13 @@ customElements.define('window-app',
         event.preventDefault()
         this.xOffset = event.clientX - this.initialX
         this.yOffset = event.clientY - this.initialY
-  
+
         // maximum and minimum values for the left and top styles
         const minTop = 0
         const maxTop = window.innerHeight - this.#windowApp.offsetHeight
         const minLeft = 0
         const maxLeft = window.innerWidth - this.#windowApp.offsetWidth
-  
+
         // the element stays within the allowed area
         this.#windowApp.style.top = Math.min(Math.max(this.yOffset, minTop), maxTop) + "px"
         this.#windowApp.style.left = Math.min(Math.max(this.xOffset, minLeft), maxLeft) + "px"

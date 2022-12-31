@@ -13,7 +13,7 @@ template.innerHTML = `
         display:none;
     }
 
-    h1 {
+    h1, h2 {
         color: pink;
     }
 
@@ -22,10 +22,11 @@ template.innerHTML = `
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        height: 100%;
     }
 
-    #recipelist {
-        padding-top: 30px;
+    #recipedetails {
+        padding: 10px 10px 10px 10px;
     }
     
     .recipe-item {        
@@ -59,7 +60,7 @@ template.innerHTML = `
     <div id="recipelist"></div>
 </div>
 <div id="recipedetails" class="hidden">
-    <h1 id="title"></h1>
+    <h2 id="title"></h2>
     <ul id="ingredients"></ul>
     <p id="instr"></p>
     <button>Back to Cookbook</button>

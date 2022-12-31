@@ -16,18 +16,18 @@ template.innerHTML = `
     }
 
     .messages {
-        height: 90%;
+        height: 320px;
         overflow-y: auto;
-        overflow-wrap: break-word;
         word-wrap: break-word;
         white-space: pre-wrap;
-        max-width: 495px; 
-        padding-bottom: 10px;
+        max-width: 500px; 
+        padding: 10px 0px 0px 10px;
     }
 
     form {
         display: flex;
-        justify-content: space-evenly;   
+        justify-content: space-evenly;
+        height: 30px;
     }
 
      #messages-input,
@@ -35,7 +35,7 @@ template.innerHTML = `
         width: 70%;
         background-color:pink;
         border: none;
-        height: 22px;
+
         border-radius: 10px;
     }
 
@@ -43,13 +43,6 @@ template.innerHTML = `
         background-color: pink;
         border-radius: 10px;        
         padding: 2px 10px 2px 10px;
-    }
-
-    #emoji-picker-container {
-        position: absolute;
-        left: 0;
-        top: 10;
-        height: 200px;
     }
 
     #emoji-button {
@@ -69,6 +62,7 @@ template.innerHTML = `
     }
 
 </style>
+
 <div class="messages" class="hidden"></div>
 
 <form id="username-form">
@@ -82,6 +76,7 @@ template.innerHTML = `
     </button>
         <button type="submit">Send</button>
 </form>
+
 `
 
 customElements.define('messages-app',
