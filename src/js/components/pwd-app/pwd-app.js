@@ -14,15 +14,27 @@ template.innerHTML = `
         width: 100%;
         height: 100%;
     }
+
+    h1 {
+        color: pink;
+    }
+
+    #message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding-top: 10%;
+    }
     
     #taskbar {
         display: flex;
-        gap: 20px;
+        gap: 10px;
         position: fixed;
         bottom: 0;
         left: 0;
         background-color: pink;
-        height: 50px;
+        height: 40px;
         width: 100%;
     }
 
@@ -38,25 +50,28 @@ template.innerHTML = `
 
     #app3 {
         background-image: url('/img/memory-app.png');
+
         background-size: 100%;
     }
 
     .app-icon {
-        margin: 5px 0px 5px 0px;   
-        height: 40px;
-        width: 40px;
+        background: rgb(40, 40, 46);
+        margin: 3px 3px 3px 3px;
+        padding: 2px 2px 0px 2px;   
+        height: 32px;
+        width: 32px;
     }
 </style>
-
-<div id="desktop">
-    <h1>Welcome to the Web Cafe</h1>
-    <h3>Choose your activity</h3>
+    <div id ="message">
+        <h1>Welcome to the Web Cafe</h1>
+        <h3>Choose your activity</h3>
+    </div>
     <div id="taskbar">
        <div id="app1" class="app-icon"></div>
        <div id="app2" class="app-icon"></div>
        <div id="app3" class="app-icon"></div>
     </div>
-</div>
+
 `
 
 customElements.define('pwd-app',
@@ -67,11 +82,11 @@ customElements.define('pwd-app',
 
         #taskbar
 
-        #app1
+        #messsagesApp
 
-        #app2
+        #myCookbook
 
-        #app3
+        #memoryApp
 
         constructor() {
             super()
@@ -83,20 +98,30 @@ customElements.define('pwd-app',
 
             this.#desktop = this.shadowRoot.querySelector('#desktop')
             this.#taskbar = this.shadowRoot.querySelector('#taskbar')
-            this.#app1 = this.shadowRoot.querySelector('#app1')
-            this.#app2 = this.shadowRoot.querySelector('#app2')
-            this.#app3 = this.shadowRoot.querySelector('#app3')
+            this.#messsagesApp = this.shadowRoot.querySelector('#app1')
+            this.#myCookbook = this.shadowRoot.querySelector('#app2')
+            this.#memoryApp = this.shadowRoot.querySelector('#app3')
         }
 
+        /**
+         * Used when the element is added to the DOM.
+         */
         connectedCallback() {
-            this.#app1.addEventListener('click', () => this.openApp('#app1'))
-            this.#app2.addEventListener('click', () => this.openApp('#app2'))
-            this.#app3.addEventListener('click', () => this.openApp('#app3'))
+            this.#messsagesApp.addEventListener('click', () => this.createApp('window-app', 'messages-app'))
+            this.#myCookbook.addEventListener('click', () => this.createApp('window-app', 'my-cookbook'))
+            this.#memoryApp.addEventListener('click', () => this.createApp('window-app', 'memory-app'))
         }
 
-        openApp(appName) {
-            // Add code to open the app here
-            console.log(`Opening ${appName}`)
+        /**
+         * Method that opens the apps by creating them.
+         * @param {*} window 
+         * @param {*} app 
+         */
+        createApp (window, app) {
+            const win = document.createElement(window)
+            const application = document.createElement(app)
+            win.appendChild(application)
+            this.shadowRoot.appendChild(win)
         }
     }
 )
