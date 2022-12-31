@@ -16,17 +16,18 @@ template.innerHTML = `
     }
 
     .messages {
-        height: 320px;
+        height: 310px;
         overflow-y: auto;
         word-wrap: break-word;
         white-space: pre-wrap;
         max-width: 500px; 
-        padding: 10px 0px 0px 10px;
+        padding: 10px 0px 10px 10px;
     }
 
     form {
         display: flex;
         justify-content: space-evenly;
+        margin-bottom: 10px;
         height: 30px;
     }
 

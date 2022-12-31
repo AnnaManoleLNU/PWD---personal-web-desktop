@@ -9,6 +9,7 @@
 const template = document.createElement('template')
 template.innerHTML = `
 <style>
+
     /* Style for the window app container */
     .window-app {
       position: absolute;
@@ -170,16 +171,16 @@ customElements.define('window-app',
         const maxLeft = window.innerWidth - this.#windowApp.offsetWidth
 
         // the element stays within the allowed area
-        this.#windowApp.style.top = Math.min(Math.max(this.yOffset, minTop), maxTop) + "px"
-        this.#windowApp.style.left = Math.min(Math.max(this.xOffset, minLeft), maxLeft) + "px"
+        this.#windowApp.style.top = Math.min(Math.max(this.yOffset, minTop), maxTop) + 'px'
+        this.#windowApp.style.left = Math.min(Math.max(this.xOffset, minLeft), maxLeft) + 'px'
       }
     }
 
     // mouse down, mouse up, and mouse move events on the window app header element
     #drag() {
-      this.#windowAppHeader.addEventListener("mousedown", this.#handleMouseDown.bind(this))
-      this.#windowAppHeader.addEventListener("mouseup", this.#handleMouseUp.bind(this))
-      this.#windowAppHeader.addEventListener("mousemove", this.#handleMouseMove.bind(this))
+      this.#windowAppHeader.addEventListener('mousedown', this.#handleMouseDown.bind(this))
+      this.#windowAppHeader.addEventListener('mouseup', this.#handleMouseUp.bind(this))
+      this.#windowAppHeader.addEventListener('mousemove', this.#handleMouseMove.bind(this))
     }
 
     // close button event

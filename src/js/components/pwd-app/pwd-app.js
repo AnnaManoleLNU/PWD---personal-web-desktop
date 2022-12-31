@@ -10,13 +10,24 @@ const template = document.createElement('template')
 template.innerHTML = `
 <style>
     :host {
-        display: block;
-        width: 100%;
-        height: 100%;
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      user-select: none;
     }
 
     h1 {
-        color: pink;
+      color: pink;
+    }
+
+    window-app {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
 
     #message {
@@ -121,7 +132,7 @@ customElements.define('pwd-app',
          * @param {*} window 
          * @param {*} app 
          */
-        createApp (window, app) {
+        createApp(window, app) {
             const win = document.createElement(window)
             const application = document.createElement(app)
             win.appendChild(application)
