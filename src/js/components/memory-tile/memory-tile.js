@@ -9,7 +9,7 @@
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-
+    /* TO DO: this maintains their position but formats them weirdly */
     /* :host {
         display: block;
         height: 87px;
@@ -178,16 +178,6 @@ customElements.define('memory-tile',
     }
 
     /**
-     * Specifies whether this instance contains the same content as another tile.
-     *
-     * @param {*} other - The tile to test for equality
-     * @returns {boolean} true if other has the same content as this tile instance.
-     */
-    isEqual(other) {
-      return this.isEqualNode(other)
-    }
-
-    /**
      * Flips the current instance, if it is not disabled.
      */
     #flip () {
@@ -204,6 +194,7 @@ customElements.define('memory-tile',
 
 
       // Raise the my-flipping-tile-extra:flip event.
+      // TO DO: Event.detail never used.
       this.dispatchEvent(new CustomEvent('flip', {
         bubbles: true,
         detail: { faceUp: this.hasAttribute('face-up') }

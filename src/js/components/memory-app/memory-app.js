@@ -42,6 +42,9 @@ template.innerHTML = `
 
   <div class="game" class="hidden">
   </div>
+  <div id="end-message" class="hidden">
+    <h4></h4>
+  </div>
   
 `
 
@@ -66,6 +69,10 @@ customElements.define('memory-app',
 
     #tile
 
+    #numberOfMatches = 0
+
+    #endMessage
+
     /**
      * Creates an instance of the current type.
      */
@@ -84,6 +91,8 @@ customElements.define('memory-app',
       this.#fourbytwo = this.shadowRoot.querySelector('#fourbytwo')
       this.#fourbyfour = this.shadowRoot.querySelector('#fourbyfour')
       this.#tiles = this.shadowRoot.querySelectorAll('memory-tile')
+      this.#endMessage =this.shadowRoot.querySelector('#end-message')
+      console.log(this.#endMessage)
 
       // Listen to click events.
       this.#twobytwo.addEventListener('click', (event) => {
@@ -117,6 +126,12 @@ customElements.define('memory-app',
 
     connectedCallback() {
       this.#game.addEventListener('flip', () => this.#gameLogic())
+      this.addEventListener('memory-game:game-over', () => {
+        console.log('the game is over you win')
+        // TO DO:
+        this.#endMessage.removeAttribute('class', 'hidden')
+        this.#endMessage.querySelector('h4').textContent = `Game over, you won in ${this.#numberOfMatches} attempts.`
+      })
     }
 
     get tiles() {
@@ -144,14 +159,17 @@ customElements.define('memory-app',
       if (second) {
         window.setTimeout(() => {
           let eventName = 'memory-game:tiles-mismatch'
-          if ((first.lastElementChild.getAttribute('src') === second.lastElementChild.getAttribute('src'))) {
+          if (first.isEqualNode(second)) {
             first.setAttribute('hidden', '')
             second.setAttribute('hidden', '')
             eventName = 'memory-game:tiles-match'
+            this.#numberOfMatches++
+            console.log(this.#numberOfMatches)
           } else {
             first.removeAttribute('face-up')
             second.removeAttribute('face-up')
             tilesToEnable.push(first, second)
+            this.#numberOfMatches++
           }
 
           this.dispatchEvent(new CustomEvent(eventName, {
