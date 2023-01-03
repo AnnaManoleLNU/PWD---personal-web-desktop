@@ -51,11 +51,6 @@ template.innerHTML = `
       transition: 1s;
     }
 
-    #tile:focus {
-      border-color: #000;
-      box-shadow: 0px 0 10px black;
-    }
-
     #tile[disabled] {
       cursor: default;
       pointer-events: none;
@@ -195,7 +190,7 @@ customElements.define('memory-tile',
     /**
      * Flips the current instance, if it is not disabled.
      */
-    #flip() {
+    #flip () {
       // Do not do anything if the element is disabled or hidden.
       if (this.hasAttribute('disabled') ||
         this.hasAttribute('hidden')) {

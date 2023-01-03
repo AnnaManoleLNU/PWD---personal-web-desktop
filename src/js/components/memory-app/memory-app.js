@@ -64,6 +64,8 @@ customElements.define('memory-app',
 
     #tiles
 
+    #tile
+
     /**
      * Creates an instance of the current type.
      */
@@ -90,6 +92,7 @@ customElements.define('memory-app',
         this.#game.removeAttribute('hidden')
         this.#createTiles(2, 2)
         this.#shuffleImages()
+        this.#gameLogic()
       })
 
       this.#fourbytwo.addEventListener('click', (event) => {
@@ -98,8 +101,7 @@ customElements.define('memory-app',
         this.#game.removeAttribute('hidden')
         this.#createTiles(4, 2)
         this.#shuffleImages()
-        this.gameLogic()
-
+        this.#gameLogic()
       })
 
       this.#fourbyfour.addEventListener('click', (event) => {
@@ -108,29 +110,78 @@ customElements.define('memory-app',
         this.#game.removeAttribute('hidden')
         this.#createTiles(4, 4)
         this.#shuffleImages()
+        this.#gameLogic()
       })
-
 
     } // CONSTRUCTOR END  
 
-    gameLogic() {
-      for (const tile of this.#tiles) {
-        tile.addEventListener('flip', event => {        
-            console.log(event.detail)          
-        })
+    connectedCallback() {
+      this.#game.addEventListener('flip', () => this.#gameLogic())
+    }
+
+    get tiles() {
+      const tiles = Array.from(this.#tiles)
+      return {
+        all: tiles,
+        faceUp: tiles.filter(tile => tile.hasAttribute('face-up') && !tile.hasAttribute('hidden')),
+        faceDown: tiles.filter(tile => !tile.hasAttribute('face-up') && !tile.hasAttribute('hidden')),
+        hidden: tiles.filter(tile => tile.hasAttribute('hidden'))
       }
-  }
+    }
+
+    #gameLogic() {
+      const tiles = this.tiles
+      const tilesToDisable = Array.from(tiles.faceUp)
+
+      if (tiles.faceUp.length > 1) {
+        tilesToDisable.push(...tiles.faceDown)
+      }
+
+      tilesToDisable.forEach(tile => (tile.setAttribute('disabled', '')))
+
+      const [first, second, ...tilesToEnable] = tilesToDisable
+
+      if (second) {
+        window.setTimeout(() => {
+          let eventName = 'memory-game:tiles-mismatch'
+          if ((first.lastElementChild.getAttribute('src') === second.lastElementChild.getAttribute('src'))) {
+            first.setAttribute('hidden', '')
+            second.setAttribute('hidden', '')
+            eventName = 'memory-game:tiles-match'
+          } else {
+            first.removeAttribute('face-up')
+            second.removeAttribute('face-up')
+            tilesToEnable.push(first, second)
+          }
+
+          this.dispatchEvent(new CustomEvent(eventName, {
+            bubbles: true,
+            detail: { first, second }
+          }))
+
+          if (tiles.all.every(tile => tile.hidden)) {
+            tiles.all.forEach(tile => (tile.disabled = true))
+            this.dispatchEvent(new CustomEvent('memory-game:game-over', {
+              bubbles: true
+            }))
+
+          } else {
+            tilesToEnable?.forEach(tile => (tile.removeAttribute('disabled')))
+          }
+        }, 1500)
+      }
+    }
 
     #createTiles(numberOfColumns, numberOfRows) {
       // create an array of tiles
       this.#tiles = []
 
       for (let i = 0; i < (numberOfColumns * numberOfRows) / 2; i++) {
-        const tile = document.createElement('memory-tile')
+        this.#tile = document.createElement('memory-tile')
         const imgSlot = this.#createSlottedImage()
-        tile.appendChild(imgSlot)
-        const clonedTile = tile.cloneNode(true)
-        this.#tiles.push(tile)
+        this.#tile.appendChild(imgSlot)
+        const clonedTile = this.#tile.cloneNode(true)
+        this.#tiles.push(this.#tile)
         this.#tiles.push(clonedTile)
       }
 
@@ -142,8 +193,6 @@ customElements.define('memory-app',
 
         this.#game.appendChild(row)
       }
-
-
     }
 
     /**
@@ -187,7 +236,6 @@ customElements.define('memory-app',
         img.setAttribute('src', shuffledScrs[index])
         index++
       }
-
 
     }
     /**

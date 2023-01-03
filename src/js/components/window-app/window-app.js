@@ -73,7 +73,6 @@ template.innerHTML = `
   <div class="window-app">
     <div class="window-app-header">
       <div class="window-app-close">
-
       </div>
     </div>
     <div class="window-app-content">
@@ -128,7 +127,6 @@ customElements.define('window-app',
       this.#drag()
 
       this.#closeButton.addEventListener('click', (event)=> {
-        console.log('i have been clicked')
         this.closeAppEvent()
       })
     } // CONSTRUCTOR END 
@@ -180,13 +178,12 @@ customElements.define('window-app',
     #drag() {
       this.#windowAppHeader.addEventListener('mousedown', this.#handleMouseDown.bind(this))
       this.#windowAppHeader.addEventListener('mouseup', this.#handleMouseUp.bind(this))
-      this.#windowAppHeader.addEventListener('mousemove', this.#handleMouseMove.bind(this))
+      window.addEventListener('mousemove', this.#handleMouseMove.bind(this))
     }
 
     // close button event
     closeAppEvent () {
       this.#closeButton.dispatchEvent(new window.CustomEvent('closeApp', { bubbles: true}))
-      console.log('the app has been closed')
       this.remove()
     }
 
