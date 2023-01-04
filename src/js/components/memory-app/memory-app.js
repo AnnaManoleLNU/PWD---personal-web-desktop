@@ -80,6 +80,12 @@ customElements.define('memory-app',
 
     #endMessage
 
+    #startTime
+
+    #endTime
+
+    #totalTime
+
     /**
      * Creates an instance of the current type.
      */
@@ -108,6 +114,7 @@ customElements.define('memory-app',
         this.#createTiles(2, 2)
         this.#shuffleImages()
         this.#gameLogic()
+        this.#startTime = Date.now()
       })
 
       this.#fourbytwo.addEventListener('click', (event) => {
@@ -117,6 +124,7 @@ customElements.define('memory-app',
         this.#createTiles(4, 2)
         this.#shuffleImages()
         this.#gameLogic()
+        this.#startTime = Date.now()
       })
 
       this.#fourbyfour.addEventListener('click', (event) => {
@@ -126,6 +134,7 @@ customElements.define('memory-app',
         this.#createTiles(4, 4)
         this.#shuffleImages()
         this.#gameLogic()
+        this.#startTime = Date.now()
       })
 
     } // CONSTRUCTOR END  
@@ -133,11 +142,12 @@ customElements.define('memory-app',
     connectedCallback() {
       this.#game.addEventListener('flip', () => this.#gameLogic())
       this.addEventListener('memory-game:game-over', () => {
-        // TO DO:
         this.#endMessage.removeAttribute('class', 'hidden')
-        this.#endMessage.querySelector('h4').textContent = `Game over, you won in ${this.#numberOfMatches} attempts.`
-        // this.clickButton()
-        
+        this.#endTime = Date.now()
+        this.#totalTime = (Math.round((this.#endTime - this.#startTime) / 1000))
+        this.#endMessage.querySelector('h4').textContent = `Game over, it took you ${this.#totalTime} seconds and ${this.#numberOfMatches} attempts.`
+        // TO DO:
+        // this.clickButton()        
       })
     }
 

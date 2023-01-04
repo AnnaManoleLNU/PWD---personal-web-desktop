@@ -41,12 +41,13 @@ template.innerHTML = `
     #taskbar {
         display: flex;
         gap: 10px;
-        position: fixed;
+        position: absolute;
         bottom: 0;
         left: 0;
         background-color: pink;
         height: 40px;
         width: 100%;
+        z-index: 9999;
     }
 
     #app1 {
@@ -72,34 +73,30 @@ template.innerHTML = `
         height: 32px;
         width: 32px;
     }
+
+
 </style>
     <div id ="message">
         <h1>Welcome to the Web Cafe</h1>
         <h3>Choose your activity</h3>
     </div>
+    
     <div id="taskbar">
        <div id="app1" class="app-icon"></div>
        <div id="app2" class="app-icon"></div>
        <div id="app3" class="app-icon"></div>
     </div>
-
 `
 
 customElements.define('pwd-app',
 
     class extends HTMLElement {
 
-        #desktop
-
-        #taskbar
-
         #messsagesApp
 
         #myCookbook
 
         #memoryApp
-
-        #highestIndex
 
         constructor() {
             super()
@@ -109,11 +106,10 @@ customElements.define('pwd-app',
             this.attachShadow({ mode: 'open' })
                 .appendChild(template.content.cloneNode(true))
 
-            this.#desktop = this.shadowRoot.querySelector('#desktop')
-            this.#taskbar = this.shadowRoot.querySelector('#taskbar')
             this.#messsagesApp = this.shadowRoot.querySelector('#app1')
             this.#myCookbook = this.shadowRoot.querySelector('#app2')
             this.#memoryApp = this.shadowRoot.querySelector('#app3')
+
 
             // event listeners
             // closing the application event listener
@@ -126,11 +122,11 @@ customElements.define('pwd-app',
         connectedCallback() {
             this.#messsagesApp.addEventListener('click', () => this.createApp('window-app', 'messages-app'))
             this.#myCookbook.addEventListener('click', () => this.createApp('window-app', 'my-cookbook'))
-            this.#memoryApp.addEventListener('click', () => this.createApp('window-app', 'memory-app'))
+            this.#memoryApp.addEventListener('click', () => this.createApp('window-app', 'memory-app'))             
         }
 
         /**
-         * Method that opens the apps by creating them.
+         * Method that opens the apps by creating them. Whenever an app is created the attribute is set to active so that the app is on top.
          * @param {*} window 
          * @param {*} app 
          */
@@ -139,6 +135,9 @@ customElements.define('pwd-app',
             const application = document.createElement(app)
             window.appendChild(application)
             window.setAttribute('active', '')
+            // window.style.top = '300px'
+            // window.style.left = '400px'
+               
             this.shadowRoot.appendChild(window)
         }
     }

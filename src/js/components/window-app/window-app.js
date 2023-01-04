@@ -20,6 +20,7 @@ template.innerHTML = `
       border: 5px solid pink;
       border-radius: 5px;
       overflow: hidden;
+      box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
     }
     
     /* Style for the window app header */
@@ -96,7 +97,6 @@ customElements.define('window-app',
 
     static highestIndex = 0
 
-
     constructor() {
       super()
 
@@ -125,11 +125,15 @@ customElements.define('window-app',
       this.xOffset = 0
       this.yOffset = 0
 
+      // Initial position of the element on the screen
+      this.initialTop = 0
+      this.initialLeft = 0
+
       this.#drag()
 
       this.appFocus()
-      
-      this.#closeButton.addEventListener('click', (event)=> {
+
+      this.#closeButton.addEventListener('click', (event) => {
         this.closeAppEvent()
       })
     } // CONSTRUCTOR END 
@@ -185,38 +189,34 @@ customElements.define('window-app',
     }
 
     // close button event
-    closeAppEvent () {
-      this.#closeButton.dispatchEvent(new window.CustomEvent('closeApp', { bubbles: true}))
+    closeAppEvent() {
+      this.#closeButton.dispatchEvent(new window.CustomEvent('closeApp', { bubbles: true }))
       this.remove()
     }
 
-    // I need to remember the last highest number z index.
-    // The index is 0 at first.
-    // I click, the index gets higher by one.
-    // The next app I click needs to remember the last click and raise that by one.
-    appFocus () {    
+    appFocus() {
       this.addEventListener('click', (event) => {
-        // use constructor to access the static property in the class
         this.setAttribute('active', '')
-      })      
+      })
     }
 
     static get observedAttributes() {
       return ['active']
     }
 
-        /**
-     * Called when observed attribute(s) changes.
-     *
-     * @param {string} name - The attribute's name.
-     * @param {*} oldValue - The old value.
-     * @param {*} newValue - The new value.
-     */
-        attributeChangedCallback(name, oldValue, newValue) {
-          if (name === 'active' && newValue !== null) {
-            this.#windowApp.style.zIndex =this.constructor.highestIndex++
-          }
-        }
+    /**
+    * Called when observed attribute(s) changes.
+    *
+    * @param {string} name - The attribute's name.
+    * @param {*} oldValue - The old value.
+    * @param {*} newValue - The new value.
+    */
+    attributeChangedCallback(name, oldValue, newValue) {
+      if (name === 'active' && newValue !== null) {
+        // use constructor to access the static property in the class
+        this.#windowApp.style.zIndex = this.constructor.highestIndex++
+      }
+    }
 
   }
 )
