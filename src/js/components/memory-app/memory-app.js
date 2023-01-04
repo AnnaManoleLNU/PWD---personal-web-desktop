@@ -104,7 +104,7 @@ customElements.define('memory-app',
       this.#fourbytwo = this.shadowRoot.querySelector('#fourbytwo')
       this.#fourbyfour = this.shadowRoot.querySelector('#fourbyfour')
       this.#tiles = this.shadowRoot.querySelectorAll('memory-tile')
-      this.#endMessage =this.shadowRoot.querySelector('#end-message')
+      this.#endMessage = this.shadowRoot.querySelector('#end-message')
 
       // Listen to click events.
       this.#twobytwo.addEventListener('click', (event) => {
@@ -137,26 +137,29 @@ customElements.define('memory-app',
         this.#startTime = Date.now()
       })
 
-    } // CONSTRUCTOR END  
-
-    connectedCallback() {
-      this.#game.addEventListener('flip', () => this.#gameLogic())
+      // Game over
       this.addEventListener('memory-game:game-over', () => {
         this.#endMessage.removeAttribute('class', 'hidden')
         this.#endTime = Date.now()
         this.#totalTime = (Math.round((this.#endTime - this.#startTime) / 1000))
         this.#endMessage.querySelector('h4').textContent = `Game over, it took you ${this.#totalTime} seconds and ${this.#numberOfMatches} attempts.`
         // TO DO:
-        // this.clickButton()        
+        this.clickButton()        
       })
+
+    } // CONSTRUCTOR END  
+
+    connectedCallback() {
+      this.#game.addEventListener('flip', () => this.#gameLogic())
     }
 
-    clickButton () {
+    clickButton() {
       this.shadowRoot.querySelector('button').addEventListener('click', () => {
         this.#options.removeAttribute('class', 'hidden')
         // TO DO --- TO FIX --- this does not create pairs when trying out a new game
-        // this.#options.setAttribute('class', 'options')
-        // this.#endMessage.setAttribute('class', 'hidden')
+        this.#options.setAttribute('class', 'options')
+        this.#endMessage.setAttribute('class', 'hidden')
+        this.#game.innerHTML = ''
       })
     }
 
@@ -242,13 +245,15 @@ customElements.define('memory-app',
      * Get a random image from an array of images. When an image has been used it gets pushed into an array of used images.
      */
     #getRandomImage() {
-      let randomIndex = Math.floor(Math.random() * this.#images.length)
-      let randomImage = this.#images[randomIndex]
-      this.#images.splice(randomIndex, 1)
+      let imagesCopy = [...this.#images]
+      let randomIndex = Math.floor(Math.random() * imagesCopy.length)
+      let randomImage = imagesCopy[randomIndex]
+      imagesCopy.splice(randomIndex, 1)
       return randomImage
-
-      // !!! REMEMBER that if you press play again it should reset the array of images
     }
+
+    // !!! REMEMBER that if you press play again it should reset the array of images
+
     /**
      * Create a slotted image with the img source from #getRandomImage
      * 
@@ -271,7 +276,8 @@ customElements.define('memory-app',
         srcs.push(src)
       }
 
-      const shuffledScrs = this.#shuffleArray(srcs)
+      let srcsCopy = [...srcs]
+      const shuffledScrs = this.#shuffleArray(srcsCopy)
 
       let index = 0
       for (const tile of this.#tiles) {
