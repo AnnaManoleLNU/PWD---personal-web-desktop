@@ -143,7 +143,6 @@ customElements.define('memory-app',
         this.#endTime = Date.now()
         this.#totalTime = (Math.round((this.#endTime - this.#startTime) / 1000))
         this.#endMessage.querySelector('h4').textContent = `Game over, it took you ${this.#totalTime} seconds and ${this.#numberOfMatches} attempts.`
-        // TO DO:
         this.clickButton()        
       })
 
@@ -156,10 +155,10 @@ customElements.define('memory-app',
     clickButton() {
       this.shadowRoot.querySelector('button').addEventListener('click', () => {
         this.#options.removeAttribute('class', 'hidden')
-        // TO DO --- TO FIX --- this does not create pairs when trying out a new game
         this.#options.setAttribute('class', 'options')
         this.#endMessage.setAttribute('class', 'hidden')
         this.#game.innerHTML = ''
+        this.#numberOfMatches = 0
       })
     }
 
@@ -251,8 +250,6 @@ customElements.define('memory-app',
       imagesCopy.splice(randomIndex, 1)
       return randomImage
     }
-
-    // !!! REMEMBER that if you press play again it should reset the array of images
 
     /**
      * Create a slotted image with the img source from #getRandomImage
