@@ -99,6 +99,8 @@ customElements.define('pwd-app',
 
         #memoryApp
 
+        #highestIndex
+
         constructor() {
             super()
 
@@ -132,11 +134,12 @@ customElements.define('pwd-app',
          * @param {*} window 
          * @param {*} app 
          */
-        createApp(window, app) {
-            const win = document.createElement(window)
+        createApp(win, app) {
+            const window = document.createElement(win)
             const application = document.createElement(app)
-            win.appendChild(application)
-            this.shadowRoot.appendChild(win)
+            window.appendChild(application)
+            window.setAttribute('active', '')
+            this.shadowRoot.appendChild(window)
         }
     }
 )

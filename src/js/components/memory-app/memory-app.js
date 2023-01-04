@@ -31,6 +31,12 @@ template.innerHTML = `
       flex-direction: column;
     }
 
+    button {
+        background-color: pink;
+        border-radius: 10px;        
+        padding: 3px 10px 3px 10px;
+    }
+
   </style>
   <div class="options">
     <h1>Memory game</h1>
@@ -44,6 +50,7 @@ template.innerHTML = `
   </div>
   <div id="end-message" class="hidden">
     <h4></h4>
+    <button>Play again</button>
   </div>
   
 `
@@ -92,7 +99,6 @@ customElements.define('memory-app',
       this.#fourbyfour = this.shadowRoot.querySelector('#fourbyfour')
       this.#tiles = this.shadowRoot.querySelectorAll('memory-tile')
       this.#endMessage =this.shadowRoot.querySelector('#end-message')
-      console.log(this.#endMessage)
 
       // Listen to click events.
       this.#twobytwo.addEventListener('click', (event) => {
@@ -127,10 +133,20 @@ customElements.define('memory-app',
     connectedCallback() {
       this.#game.addEventListener('flip', () => this.#gameLogic())
       this.addEventListener('memory-game:game-over', () => {
-        console.log('the game is over you win')
         // TO DO:
         this.#endMessage.removeAttribute('class', 'hidden')
         this.#endMessage.querySelector('h4').textContent = `Game over, you won in ${this.#numberOfMatches} attempts.`
+        // this.clickButton()
+        
+      })
+    }
+
+    clickButton () {
+      this.shadowRoot.querySelector('button').addEventListener('click', () => {
+        this.#options.removeAttribute('class', 'hidden')
+        // TO DO --- TO FIX --- this does not create pairs when trying out a new game
+        // this.#options.setAttribute('class', 'options')
+        // this.#endMessage.setAttribute('class', 'hidden')
       })
     }
 
@@ -164,7 +180,6 @@ customElements.define('memory-app',
             second.setAttribute('hidden', '')
             eventName = 'memory-game:tiles-match'
             this.#numberOfMatches++
-            console.log(this.#numberOfMatches)
           } else {
             first.removeAttribute('face-up')
             second.removeAttribute('face-up')

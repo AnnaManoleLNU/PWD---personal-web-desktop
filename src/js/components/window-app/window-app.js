@@ -94,10 +94,11 @@ customElements.define('window-app',
 
     #closeButton
 
+    static highestIndex = 0
+
 
     constructor() {
       super()
-
 
       // Attach a shadow DOM tree to this element and
       // append the template to the shadow root.
@@ -126,6 +127,8 @@ customElements.define('window-app',
 
       this.#drag()
 
+      this.appFocus()
+      
       this.#closeButton.addEventListener('click', (event)=> {
         this.closeAppEvent()
       })
@@ -186,6 +189,34 @@ customElements.define('window-app',
       this.#closeButton.dispatchEvent(new window.CustomEvent('closeApp', { bubbles: true}))
       this.remove()
     }
+
+    // I need to remember the last highest number z index.
+    // The index is 0 at first.
+    // I click, the index gets higher by one.
+    // The next app I click needs to remember the last click and raise that by one.
+    appFocus () {    
+      this.addEventListener('click', (event) => {
+        // use constructor to access the static property in the class
+        this.setAttribute('active', '')
+      })      
+    }
+
+    static get observedAttributes() {
+      return ['active']
+    }
+
+        /**
+     * Called when observed attribute(s) changes.
+     *
+     * @param {string} name - The attribute's name.
+     * @param {*} oldValue - The old value.
+     * @param {*} newValue - The new value.
+     */
+        attributeChangedCallback(name, oldValue, newValue) {
+          if (name === 'active' && newValue !== null) {
+            this.#windowApp.style.zIndex =this.constructor.highestIndex++
+          }
+        }
 
   }
 )
