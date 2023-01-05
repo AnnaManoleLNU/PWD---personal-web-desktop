@@ -11,6 +11,10 @@ import '../memory-tile/index.js'
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
+    :host {
+          --tile-size: 85px;
+        }
+
     .hidden {
         display:none;
     }
@@ -29,12 +33,24 @@ template.innerHTML = `
       align-items: center;
       justify-content: center;
       flex-direction: column;
+      height: 100%;
     }
 
     button {
         background-color: pink;
         border-radius: 10px;        
         padding: 3px 10px 3px 10px;
+    }
+
+    #game {
+      display: grid;
+      grid-template-columns: repeat(4, var(--tile-size));   
+      gap: 8px;
+    }
+
+    memory-tile {
+      width: var(--tile-size);
+      height: var(--tile-size);
     }
 
   </style>
@@ -46,7 +62,7 @@ template.innerHTML = `
       <p id="fourbyfour">4x4</p>
   </div>
 
-  <div class="game" class="hidden">
+  <div id="game" class="hidden" >
   </div>
   <div id="end-message" class="hidden">
     <h4></h4>
@@ -71,6 +87,8 @@ customElements.define('memory-app',
     #fourbyfour
 
     #images = ['/img/cake.png', '/img/sundae.png', '/img/sushi.png', '/img/boba.png', '/img/pizza.png', '/img/hotdog.png', '/img/icecream.png', '/img/coffee.png']
+
+    #imagesCopy
 
     #tiles
 
@@ -99,7 +117,7 @@ customElements.define('memory-app',
 
       // Get the tile element in the shadow root.
       this.#options = this.shadowRoot.querySelector('.options')
-      this.#game = this.shadowRoot.querySelector('.game')
+      this.#game = this.shadowRoot.querySelector('#game')
       this.#twobytwo = this.shadowRoot.querySelector('#twobytwo')
       this.#fourbytwo = this.shadowRoot.querySelector('#fourbytwo')
       this.#fourbyfour = this.shadowRoot.querySelector('#fourbyfour')
@@ -110,7 +128,7 @@ customElements.define('memory-app',
       this.#twobytwo.addEventListener('click', (event) => {
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
-        this.#game.removeAttribute('hidden')
+        this.#game.removeAttribute('class', 'hidden')
         this.#createTiles(2, 2)
         this.#shuffleImages()
         this.#gameLogic()
@@ -120,7 +138,7 @@ customElements.define('memory-app',
       this.#fourbytwo.addEventListener('click', (event) => {
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
-        this.#game.removeAttribute('hidden')
+        this.#game.removeAttribute('class', 'hidden')
         this.#createTiles(4, 2)
         this.#shuffleImages()
         this.#gameLogic()
@@ -130,7 +148,8 @@ customElements.define('memory-app',
       this.#fourbyfour.addEventListener('click', (event) => {
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
-        this.#game.removeAttribute('hidden')
+        this.#game.removeAttribute('class', 'hidden')
+
         this.#createTiles(4, 4)
         this.#shuffleImages()
         this.#gameLogic()
@@ -140,10 +159,11 @@ customElements.define('memory-app',
       // Game over
       this.addEventListener('memory-game:game-over', () => {
         this.#endMessage.removeAttribute('class', 'hidden')
+        this.#game.setAttribute('class', 'hidden')
         this.#endTime = Date.now()
         this.#totalTime = (Math.round((this.#endTime - this.#startTime) / 1000))
-        this.#endMessage.querySelector('h4').textContent = `Game over, it took you ${this.#totalTime} seconds and ${this.#numberOfMatches} attempts.`
-        this.clickButton()        
+        this.#endMessage.querySelector('h4').textContent = `You win! It took you ${this.#totalTime} seconds and ${this.#numberOfMatches} attempts.`
+        this.#clickButton()        
       })
 
     } // CONSTRUCTOR END  
@@ -152,16 +172,23 @@ customElements.define('memory-app',
       this.#game.addEventListener('flip', () => this.#gameLogic())
     }
 
-    clickButton() {
+    /**
+     * Event on clicking the button.
+     */
+    #clickButton() {
       this.shadowRoot.querySelector('button').addEventListener('click', () => {
         this.#options.removeAttribute('class', 'hidden')
         this.#options.setAttribute('class', 'options')
         this.#endMessage.setAttribute('class', 'hidden')
         this.#game.innerHTML = ''
         this.#numberOfMatches = 0
+        this.#images = ['/img/cake.png', '/img/sundae.png', '/img/sushi.png', '/img/boba.png', '/img/pizza.png', '/img/hotdog.png', '/img/icecream.png', '/img/coffee.png']
       })
     }
 
+    /**
+     * Getter.
+     */
     get tiles() {
       const tiles = Array.from(this.#tiles)
       return {
@@ -172,6 +199,9 @@ customElements.define('memory-app',
       }
     }
 
+    /**
+     * Set the rules for the game.
+     */
     #gameLogic() {
       const tiles = this.tiles
       const tilesToDisable = Array.from(tiles.faceUp)
@@ -217,6 +247,12 @@ customElements.define('memory-app',
       }
     }
 
+    /**
+     * Create game tiles according to the number of columns and rows.
+     *
+     * @param {*} numberOfColumns 
+     * @param {*} numberOfRows 
+     */
     #createTiles(numberOfColumns, numberOfRows) {
       // create an array of tiles
       this.#tiles = []
@@ -241,13 +277,12 @@ customElements.define('memory-app',
     }
 
     /**
-     * Get a random image from an array of images. When an image has been used it gets pushed into an array of used images.
+     * Get a random image from an array of images. A different one everytime.
      */
     #getRandomImage() {
-      let imagesCopy = [...this.#images]
-      let randomIndex = Math.floor(Math.random() * imagesCopy.length)
-      let randomImage = imagesCopy[randomIndex]
-      imagesCopy.splice(randomIndex, 1)
+      const randomIndex = Math.floor(Math.random() * this.#images.length)
+      const randomImage = this.#images[randomIndex]
+      this.#images.splice(randomIndex, 1)
       return randomImage
     }
 
@@ -263,6 +298,9 @@ customElements.define('memory-app',
       return imgSlot
     }
 
+    /**
+     * Shuffle the src attributes around.
+     */
     #shuffleImages() {
       this.#tiles = this.#game.querySelectorAll('memory-tile')
       const srcs = []
@@ -273,8 +311,7 @@ customElements.define('memory-app',
         srcs.push(src)
       }
 
-      let srcsCopy = [...srcs]
-      const shuffledScrs = this.#shuffleArray(srcsCopy)
+      const shuffledScrs = this.#shuffleArray(srcs)
 
       let index = 0
       for (const tile of this.#tiles) {

@@ -77,7 +77,7 @@ template.innerHTML = `
 
 </style>
     <div id ="message">
-        <h1>Welcome to the Web Cafe</h1>
+        <h1>Welcome to the Web Café</h1>
         <h3>Choose your activity</h3>
     </div>
     
@@ -92,11 +92,15 @@ customElements.define('pwd-app',
 
     class extends HTMLElement {
 
-        #messsagesApp
+        #messagesApp
 
         #myCookbook
 
         #memoryApp
+
+        #appName
+
+        #appNames = []
 
         constructor() {
             super()
@@ -106,7 +110,7 @@ customElements.define('pwd-app',
             this.attachShadow({ mode: 'open' })
                 .appendChild(template.content.cloneNode(true))
 
-            this.#messsagesApp = this.shadowRoot.querySelector('#app1')
+            this.#messagesApp = this.shadowRoot.querySelector('#app1')
             this.#myCookbook = this.shadowRoot.querySelector('#app2')
             this.#memoryApp = this.shadowRoot.querySelector('#app3')
 
@@ -120,25 +124,42 @@ customElements.define('pwd-app',
          * Used when the element is added to the DOM.
          */
         connectedCallback() {
-            this.#messsagesApp.addEventListener('click', () => this.createApp('window-app', 'messages-app'))
-            this.#myCookbook.addEventListener('click', () => this.createApp('window-app', 'my-cookbook'))
-            this.#memoryApp.addEventListener('click', () => this.createApp('window-app', 'memory-app'))             
+            this.#messagesApp.addEventListener('click', (event) => {
+                this.#createApp('window-app', 'messages-app', 'Messages')
+            })
+            this.#myCookbook.addEventListener('click', (event) => {
+                this.#createApp('window-app', 'my-cookbook', 'Coobook')
+
+            })
+            this.#memoryApp.addEventListener('click', (event) => {
+                this.#createApp('window-app', 'memory-app', 'Memory game')
+            })
         }
 
         /**
-         * Method that opens the apps by creating them. Whenever an app is created the attribute is set to active so that the app is on top.
+         * Method that opens the apps by creating them. Whenever an app is created the attribute is set to active so that the app is on top.  Sets the name of the app by creating the respective element and appending it to the app header.
+         *
          * @param {*} window 
          * @param {*} app 
          */
-        createApp(win, app) {
+        #createApp(win, app, appName) {
+            // Create the window and app and append the app inside the window
             const window = document.createElement(win)
             const application = document.createElement(app)
             window.appendChild(application)
             window.setAttribute('active', '')
-            // window.style.top = '300px'
-            // window.style.left = '400px'
-               
             this.shadowRoot.appendChild(window)
+
+            // Set the name
+            const appNameContainer = document.createElement('div')
+            const appNameParagraph = document.createElement('p')
+            appNameParagraph.style.color = 'black'
+            appNameParagraph.style.fontWeight = 'bold'
+            appNameContainer.appendChild(appNameParagraph)
+            appNameParagraph.textContent = appName
+            const header = window.shadowRoot.querySelector('.window-app-header')
+            const button = window.shadowRoot.querySelector('.window-app-close')
+            header.insertBefore(appNameContainer, button)
         }
     }
 )

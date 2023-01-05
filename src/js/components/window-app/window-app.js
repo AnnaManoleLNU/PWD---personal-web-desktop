@@ -27,6 +27,7 @@ template.innerHTML = `
     .window-app-header {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       height: 30px;
       background: pink;
       padding: 0;
@@ -37,7 +38,6 @@ template.innerHTML = `
     .window-app-close {
       width: 20px;
       height: 20px;
-      margin-left: 465px;
       cursor: pointer;
       background: url('/img/close-icon.png') center/contain no-repeat;
     }
@@ -73,8 +73,7 @@ template.innerHTML = `
 
   <div class="window-app">
     <div class="window-app-header">
-      <div class="window-app-close">
-      </div>
+      <div class="window-app-close"></div>
     </div>
     <div class="window-app-content">
       <!-- Other web components can go here -->
@@ -99,6 +98,8 @@ customElements.define('window-app',
 
     constructor() {
       super()
+
+      this.appName
 
       // Attach a shadow DOM tree to this element and
       // append the template to the shadow root.
@@ -132,6 +133,7 @@ customElements.define('window-app',
       this.#drag()
 
       this.appFocus()
+
 
       this.#closeButton.addEventListener('click', (event) => {
         this.closeAppEvent()

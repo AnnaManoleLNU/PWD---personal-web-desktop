@@ -10,22 +10,30 @@ const template = document.createElement('template')
 template.innerHTML = `
   <style>
     /* TO DO: this maintains their position but formats them weirdly */
-    /* :host {
+    :host {
         display: block;
         height: 87px;
         width: 80px;
-        perspective: 1000px;
-        position: relative;
-    } */
+    }
 
-    [hidden] #tile {
+    
+    :host([face-up]) #front {
+      display: inline-block;
+    }
+
+    :host([face-up]) #back {
+      display: none;
+    }
+    
+    :host([hidden]) #tile {
         cursor: default;
         pointer-events: none;
         box-shadow: none;
-        border-style: dotted;
         border-color: #858585;
+        visibility: hidden;
     }
-    
+
+    /* To remove? Not important */
     :host([hidden]) #tile>* {
         visibility: hidden;
     }
@@ -37,7 +45,7 @@ template.innerHTML = `
 
     #tile {
       display: inline-block;
-      height: 87px;
+      height: 85px;
       width: 80px;
       padding:0;
       border: solid 1px #767676;
@@ -55,7 +63,6 @@ template.innerHTML = `
       cursor: default;
       pointer-events: none;
       box-shadow: none;
-      border-style: dashed;
       border-color: #858585;
     }
 
@@ -98,11 +105,11 @@ template.innerHTML = `
 
   </style>
 
-    <button class="hidden" id="tile" >
-      <div id="front">
+    <button  part="tile-main" id="tile" >
+      <div  part="tile-front" id="front">
         <slot></slot>
       </div>
-      <div id="back"></div>
+      <div part="tile-back" id="back"></div>
     </button>
 `
 
