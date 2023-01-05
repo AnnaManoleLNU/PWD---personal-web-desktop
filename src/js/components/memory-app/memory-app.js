@@ -42,7 +42,23 @@ template.innerHTML = `
         padding: 3px 10px 3px 10px;
     }
 
-    #game {
+    #game-easy {
+      display: grid;
+      grid-template-columns: repeat(2, var(--tile-size));   
+      gap: 8px;
+    }
+
+    /* options don't format well */
+    /* set the id to the game name when needed */
+    #game-medium {
+      display: grid;
+      grid-template-columns: repeat(4, var(--tile-size));  
+      grid-template-rows: repeat(2, var(--tile-size)); 
+      gap: 8px;
+    }
+
+    /* end screen does not format well */    
+    #game-hard {
       display: grid;
       grid-template-columns: repeat(4, var(--tile-size));   
       gap: 8px;
@@ -62,7 +78,7 @@ template.innerHTML = `
       <p id="fourbyfour">4x4</p>
   </div>
 
-  <div id="game" class="hidden" >
+  <div class="game" class="hidden" >
   </div>
   <div id="end-message" class="hidden">
     <h4></h4>
@@ -87,8 +103,6 @@ customElements.define('memory-app',
     #fourbyfour
 
     #images = ['/img/cake.png', '/img/sundae.png', '/img/sushi.png', '/img/boba.png', '/img/pizza.png', '/img/hotdog.png', '/img/icecream.png', '/img/coffee.png']
-
-    #imagesCopy
 
     #tiles
 
@@ -117,7 +131,7 @@ customElements.define('memory-app',
 
       // Get the tile element in the shadow root.
       this.#options = this.shadowRoot.querySelector('.options')
-      this.#game = this.shadowRoot.querySelector('#game')
+      this.#game = this.shadowRoot.querySelector('.game')
       this.#twobytwo = this.shadowRoot.querySelector('#twobytwo')
       this.#fourbytwo = this.shadowRoot.querySelector('#fourbytwo')
       this.#fourbyfour = this.shadowRoot.querySelector('#fourbyfour')
@@ -129,6 +143,7 @@ customElements.define('memory-app',
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('class', 'hidden')
+        this.#game.setAttribute('id', 'game-easy')
         this.#createTiles(2, 2)
         this.#shuffleImages()
         this.#gameLogic()
@@ -139,7 +154,8 @@ customElements.define('memory-app',
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('class', 'hidden')
-        this.#createTiles(4, 2)
+        this.#game.setAttribute('id', 'game-medium')
+        this.#createTiles(2, 4)
         this.#shuffleImages()
         this.#gameLogic()
         this.#startTime = Date.now()
@@ -149,7 +165,7 @@ customElements.define('memory-app',
         event.preventDefault()
         this.#options.setAttribute('class', 'hidden')
         this.#game.removeAttribute('class', 'hidden')
-
+        this.#game.setAttribute('id', 'game-hard')
         this.#createTiles(4, 4)
         this.#shuffleImages()
         this.#gameLogic()
@@ -160,6 +176,7 @@ customElements.define('memory-app',
       this.addEventListener('memory-game:game-over', () => {
         this.#endMessage.removeAttribute('class', 'hidden')
         this.#game.setAttribute('class', 'hidden')
+        this.#game.removeAttribute('id', '')
         this.#endTime = Date.now()
         this.#totalTime = (Math.round((this.#endTime - this.#startTime) / 1000))
         this.#endMessage.querySelector('h4').textContent = `You win! It took you ${this.#totalTime} seconds and ${this.#numberOfMatches} attempts.`
@@ -253,10 +270,11 @@ customElements.define('memory-app',
      * @param {*} numberOfColumns 
      * @param {*} numberOfRows 
      */
-    #createTiles(numberOfColumns, numberOfRows) {
+    #createTiles(numberOfRows, numberOfColumns) {
       // create an array of tiles
       this.#tiles = []
 
+      // generate as many tiles as you need
       for (let i = 0; i < (numberOfColumns * numberOfRows) / 2; i++) {
         this.#tile = document.createElement('memory-tile')
         const imgSlot = this.#createSlottedImage()
@@ -266,13 +284,13 @@ customElements.define('memory-app',
         this.#tiles.push(clonedTile)
       }
 
-      for (let i = 0; i < numberOfColumns * numberOfRows; i += numberOfColumns) {
-        const row = document.createElement('div')
-        for (let j = 0; j < numberOfColumns; j++) {
-          row.appendChild(this.#tiles[i + j])
+      // create columns out of the tiles, append tiles to them and then append them to the game
+      for (let i = 0; i < numberOfColumns * numberOfRows; i += numberOfRows) {
+        const column = document.createElement('div')
+        for (let j = 0; j < numberOfRows; j++) {
+          column.appendChild(this.#tiles[i + j])
         }
-
-        this.#game.appendChild(row)
+        this.#game.appendChild(column)
       }
     }
 

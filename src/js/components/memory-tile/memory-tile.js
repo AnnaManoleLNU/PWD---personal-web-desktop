@@ -9,13 +9,13 @@
 const template = document.createElement('template')
 template.innerHTML = `
   <style>
-    /* TO DO: this maintains their position but formats them weirdly */
     :host {
         display: block;
         height: 87px;
         width: 80px;
+        perspective: 1000px;
+        position: relative;
     }
-
     
     :host([face-up]) #front {
       display: inline-block;
@@ -29,7 +29,6 @@ template.innerHTML = `
         cursor: default;
         pointer-events: none;
         box-shadow: none;
-        border-color: #858585;
         visibility: hidden;
     }
 
@@ -44,7 +43,7 @@ template.innerHTML = `
     }
 
     #tile {
-      display: inline-block;
+      display: inline;
       height: 85px;
       width: 80px;
       padding:0;
@@ -56,7 +55,8 @@ template.innerHTML = `
       box-shadow: 0px 0 10px #ccc;
       /* flipping */
       transform-style: preserve-3d;
-      transition: 1s;
+      /* Remove this for getting the end screen imediately, but without fancy animation */
+      /* transition: 1s; */
     }
 
     #tile[disabled] {

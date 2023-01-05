@@ -99,8 +99,6 @@ customElements.define('window-app',
     constructor() {
       super()
 
-      this.appName
-
       // Attach a shadow DOM tree to this element and
       // append the template to the shadow root.
       this.attachShadow({ mode: 'open' })
@@ -115,25 +113,20 @@ customElements.define('window-app',
       this.isDragging = false
 
       // Initial position of the element when the drag starts
-      this.initialX = 0
-      this.initialY = 0
+      this.initialX = 100
+      this.initialY = 100
 
       // Current position of the element
-      this.currentX = 0
-      this.currentY = 0
+      this.currentX = 100
+      this.currentY = 100
 
       // Offset from the initial position
       this.xOffset = 0
       this.yOffset = 0
 
-      // Initial position of the element on the screen
-      this.initialTop = 0
-      this.initialLeft = 0
-
       this.#drag()
 
       this.appFocus()
-
 
       this.#closeButton.addEventListener('click', (event) => {
         this.closeAppEvent()
