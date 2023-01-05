@@ -128,18 +128,15 @@ customElements.define('pwd-app',
         connectedCallback() {
             this.#messagesApp.addEventListener('click', (event) => {
                 this.#createApp('window-app', 'messages-app', 'Messages')
-                this.getAppWindows().slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
-                console.log('messages app is active')
+                this.#lastWindowActive()
             })
             this.#myCookbook.addEventListener('click', (event) => {
                 this.#createApp('window-app', 'my-cookbook', 'Coobook')
-                this.getAppWindows().slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
-                console.log('cookbook app is active')
+                this.#lastWindowActive()
             })
             this.#memoryApp.addEventListener('click', (event) => {
                 this.#createApp('window-app', 'memory-app', 'Memory game')
-                this.getAppWindows().slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
-                console.log('memory app is active')
+                this.#lastWindowActive()
             })
 
         }
@@ -170,27 +167,12 @@ customElements.define('pwd-app',
             const header = window.shadowRoot.querySelector('.window-app-header')
             const button = window.shadowRoot.querySelector('.window-app-close')
             header.insertBefore(appNameContainer, button)
-
-            //this.removeActive()
         }
 
-        /**
-         * Remove the active atribute for everyone except last one.
-         */
-        removeActive() {
-            const windows = this.shadowRoot.querySelectorAll('window-app')
-            const windowsArray = Array.from(windows)
-            console.log(windowsArray)
-            for (let i = 0; i < windowsArray.length - 1; i++) {
-                windowsArray[i].removeAttribute('active')
-            }
-        }
-
-        getAppWindows() {
-
+        #lastWindowActive() {
             const appWindows = this.shadowRoot.querySelectorAll('window-app')
-
-            return Array.from(appWindows)
+            const windowsArray = Array.from(appWindows)
+            windowsArray.slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
         }
     }
 )
