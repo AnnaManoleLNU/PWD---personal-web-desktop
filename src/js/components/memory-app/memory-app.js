@@ -48,16 +48,13 @@ template.innerHTML = `
       gap: 8px;
     }
 
-    /* options don't format well */
-    /* set the id to the game name when needed */
     #game-medium {
       display: grid;
       grid-template-columns: repeat(4, var(--tile-size));  
       grid-template-rows: repeat(2, var(--tile-size)); 
       gap: 8px;
     }
-
-    /* end screen does not format well */    
+   
     #game-hard {
       display: grid;
       grid-template-columns: repeat(4, var(--tile-size));   
@@ -83,8 +80,7 @@ template.innerHTML = `
   <div id="end-message" class="hidden">
     <h4></h4>
     <button>Play again</button>
-  </div>
-  
+  </div>  
 `
 
 customElements.define('memory-app',

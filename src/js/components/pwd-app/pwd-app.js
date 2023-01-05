@@ -74,6 +74,10 @@ template.innerHTML = `
         width: 32px;
     }
 
+    .app-icon:hover {
+        background-color: black
+    }
+
 
 </style>
     <div id ="message">
@@ -98,10 +102,6 @@ customElements.define('pwd-app',
 
         #memoryApp
 
-        #appName
-
-        #appNames = []
-
         constructor() {
             super()
 
@@ -114,10 +114,12 @@ customElements.define('pwd-app',
             this.#myCookbook = this.shadowRoot.querySelector('#app2')
             this.#memoryApp = this.shadowRoot.querySelector('#app3')
 
-
             // event listeners
             // closing the application event listener
             this.addEventListener('closeApp', (event))
+
+            // click focus
+
         }
 
         /**
@@ -126,14 +128,20 @@ customElements.define('pwd-app',
         connectedCallback() {
             this.#messagesApp.addEventListener('click', (event) => {
                 this.#createApp('window-app', 'messages-app', 'Messages')
+                this.getAppWindows().slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
+                console.log('messages app is active')
             })
             this.#myCookbook.addEventListener('click', (event) => {
                 this.#createApp('window-app', 'my-cookbook', 'Coobook')
-
+                this.getAppWindows().slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
+                console.log('cookbook app is active')
             })
             this.#memoryApp.addEventListener('click', (event) => {
                 this.#createApp('window-app', 'memory-app', 'Memory game')
+                this.getAppWindows().slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
+                console.log('memory app is active')
             })
+
         }
 
         /**
@@ -150,6 +158,8 @@ customElements.define('pwd-app',
             window.setAttribute('active', '')
             this.shadowRoot.appendChild(window)
 
+            // listen for focus           
+
             // Set the name
             const appNameContainer = document.createElement('div')
             const appNameParagraph = document.createElement('p')
@@ -160,6 +170,27 @@ customElements.define('pwd-app',
             const header = window.shadowRoot.querySelector('.window-app-header')
             const button = window.shadowRoot.querySelector('.window-app-close')
             header.insertBefore(appNameContainer, button)
+
+            //this.removeActive()
+        }
+
+        /**
+         * Remove the active atribute for everyone except last one.
+         */
+        removeActive() {
+            const windows = this.shadowRoot.querySelectorAll('window-app')
+            const windowsArray = Array.from(windows)
+            console.log(windowsArray)
+            for (let i = 0; i < windowsArray.length - 1; i++) {
+                windowsArray[i].removeAttribute('active')
+            }
+        }
+
+        getAppWindows() {
+
+            const appWindows = this.shadowRoot.querySelectorAll('window-app')
+
+            return Array.from(appWindows)
         }
     }
 )

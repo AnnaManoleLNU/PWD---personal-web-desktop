@@ -139,18 +139,12 @@ customElements.define('memory-tile',
 
       // Listen to click events.
       this.addEventListener('click', (event) => {
-        // Flip if main button, no other button or key pressed.
-        if (event.button === 0 &&
-          event.buttons < 2 &&
-          !event.altKey &&
-          !event.ctrlKey &&
-          !event.metaKey &&
-          !event.shiftKey) {
+        // Flip if main button
+        if (event.button === 0 ) {
           this.#flip()
         }
       })
     }
-
 
     /**
      * Attributes to monitor for changes.
@@ -201,11 +195,7 @@ customElements.define('memory-tile',
 
 
       // Raise the my-flipping-tile-extra:flip event.
-      // TO DO: Event.detail never used.
-      this.dispatchEvent(new CustomEvent('flip', {
-        bubbles: true,
-        detail: { faceUp: this.hasAttribute('face-up') }
-      }))
+      this.dispatchEvent(new CustomEvent('flip', { bubbles: true }))
     }
   }
 )

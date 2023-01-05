@@ -20,7 +20,7 @@ template.innerHTML = `
       border: 5px solid pink;
       border-radius: 5px;
       overflow: hidden;
-      box-shadow: 10px 10px 5px rgba(0, 0, 0, 0.5);
+      box-shadow: 10px 10px 10px 10px rgba(0, 0, 0, 0.5);
     }
     
     /* Style for the window app header */
@@ -113,12 +113,12 @@ customElements.define('window-app',
       this.isDragging = false
 
       // Initial position of the element when the drag starts
-      this.initialX = 100
-      this.initialY = 100
+      this.initialX
+      this.initialY
 
       // Current position of the element
-      this.currentX = 100
-      this.currentY = 100
+      this.currentX
+      this.currentY
 
       // Offset from the initial position
       this.xOffset = 0
@@ -126,10 +126,10 @@ customElements.define('window-app',
 
       this.#drag()
 
-      this.appFocus()
+      this.#appFocus()
 
       this.#closeButton.addEventListener('click', (event) => {
-        this.closeAppEvent()
+        this.#closeAppEvent()
       })
     } // CONSTRUCTOR END 
 
@@ -183,27 +183,36 @@ customElements.define('window-app',
       window.addEventListener('mousemove', this.#handleMouseMove.bind(this))
     }
 
-    // close button event
-    closeAppEvent() {
+    /**
+     * Event triggered when the close button in clicked. Bubbles to pwd-app. Removes the element from the DOM/shadow DOM.
+     */
+    #closeAppEvent() {
       this.#closeButton.dispatchEvent(new window.CustomEvent('closeApp', { bubbles: true }))
       this.remove()
     }
 
-    appFocus() {
+    /**
+     * Set the app to be in focus.
+     */
+    #appFocus() {
       this.addEventListener('click', (event) => {
         this.setAttribute('active', '')
       })
-    }
+    }   
 
+    /**
+     * Attributes to monitor for changes.
+     *
+     * @returns {string[]} A string array of attributes to monitor.
+     */
     static get observedAttributes() {
       return ['active']
     }
 
     /**
-    * Called when observed attribute(s) changes.
+    * Called when observed attribute changes.
     *
     * @param {string} name - The attribute's name.
-    * @param {*} oldValue - The old value.
     * @param {*} newValue - The new value.
     */
     attributeChangedCallback(name, oldValue, newValue) {

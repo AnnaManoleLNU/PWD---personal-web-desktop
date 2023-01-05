@@ -76,8 +76,6 @@ customElements.define('my-cookbook',
 
         #recipeList
 
-        #recipe
-
         #recipeTitle
 
         #instructions
@@ -99,8 +97,8 @@ customElements.define('my-cookbook',
             this.#recipeList = this.shadowRoot.querySelector('#recipelist')
             this.#recipeTitle = this.shadowRoot.querySelector('#title')
             this.#instructions = this.shadowRoot.querySelector('#instr')
-            this.#button = this.shadowRoot.querySelector('button')
             this.#ingredients = this.shadowRoot.querySelector('#ingredients')
+            this.#button = this.shadowRoot.querySelector('button')
 
             this.#button.addEventListener('click', (event) => {
                 event.preventDefault()
@@ -119,16 +117,16 @@ customElements.define('my-cookbook',
 
                 // Recipe titles
                 const selectedRecipeTitle = recipe.meals[0].strMeal
-                this.#recipe = document.createElement('p')
-                this.#recipe.textContent = selectedRecipeTitle 
-                this.#recipeList.appendChild(this.#recipe)
-                this.#recipe.setAttribute('class', 'recipe-item')
+                const recipeOption = document.createElement('p')
+                recipeOption.textContent = selectedRecipeTitle
+                this.#recipeList.appendChild(recipeOption)
+                recipeOption.setAttribute('class', 'recipe-item')
 
                 // create ingredient list 
                 const ingredientList = this.createIngredientList(recipe.meals[0])
 
-                // Event listener for clicking on a recipe
-                this.#recipe.addEventListener('click', (event) => {
+                // Event listener for clicking on a recipe option
+                recipeOption.addEventListener('click', (event) => {
                     event.preventDefault()
                     this.generateInstructions()
                     this.#recipeTitle.textContent = selectedRecipeTitle
