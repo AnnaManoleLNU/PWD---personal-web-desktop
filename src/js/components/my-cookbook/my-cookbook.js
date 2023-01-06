@@ -66,29 +66,66 @@ template.innerHTML = `
     <button>Back to Cookbook</button>
 </div>
 `
-
+/**
+ * Define custom element.
+ */
 customElements.define('my-cookbook',
 
   /**
-   *
+   * Represents a my-cookbook element.
    */
   class extends HTMLElement {
+    /**
+     * The menu screen.
+     *
+     * @type {HTMLDivElement}
+     */
     #menu
 
-    #recipeDetails
-
+    /**
+     * The recipe list present on the menu screen that lets the user choose which recipe they want to see.
+     *
+     * @type {HTMLDivElement}
+     */
     #recipeList
 
+    /**
+     * The recipe details (title, ingredients and instructions).
+     *
+     * @type {HTMLDivElement}
+     */
+    #recipeDetails
+
+    /**
+     * The title (name of the recipe) present in the recipe details.
+     *
+     * @type {HTMLHeadingElement}
+     */
     #recipeTitle
 
+    /**
+     * The recipe instructions present in the recipe details.
+     *
+     * @type {HTMLParagraphElement}
+     */
     #instructions
 
+    /**
+     * The list of ingredients present in the recipe details.
+     *
+     * @type {HTMLUListElement}
+     */
     #ingredients
 
+    /**
+     * Button used to go back to the other recipes/the menu screen.
+     *
+     * @type {HTMLButtonElement}
+     */
     #button
 
     /**
-     *
+     * Creates an instance of the current type.
      */
     constructor () {
       super()
@@ -98,6 +135,7 @@ customElements.define('my-cookbook',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
+      // Query selectors
       this.#menu = this.shadowRoot.querySelector('#menu')
       this.#recipeDetails = this.shadowRoot.querySelector('#recipedetails')
       this.#recipeList = this.shadowRoot.querySelector('#recipelist')
@@ -106,6 +144,7 @@ customElements.define('my-cookbook',
       this.#ingredients = this.shadowRoot.querySelector('#ingredients')
       this.#button = this.shadowRoot.querySelector('button')
 
+      // Event listeners
       this.#button.addEventListener('click', (event) => {
         event.preventDefault()
         this.#recipeDetails.setAttribute('class', 'hidden')
@@ -114,7 +153,7 @@ customElements.define('my-cookbook',
     }
 
     /**
-     *
+     * Used when the element is added to the DOM.
      */
     async connectedCallback () {
       // Fetch 3 random recipes
@@ -131,12 +170,12 @@ customElements.define('my-cookbook',
         recipeOption.setAttribute('class', 'recipe-item')
 
         // create ingredient list
-        const ingredientList = this.createIngredientList(recipe.meals[0])
+        const ingredientList = this.#createIngredientList(recipe.meals[0])
 
         // Event listener for clicking on a recipe option
         recipeOption.addEventListener('click', (event) => {
           event.preventDefault()
-          this.generateInstructions()
+          this.#showRecipeDetails()
           this.#recipeTitle.textContent = selectedRecipeTitle
           this.#instructions.textContent = recipe.meals[0].strInstructions
 
@@ -146,7 +185,7 @@ customElements.define('my-cookbook',
             this.#ingredients.removeChild(this.#ingredients.firstChild)
           }
 
-          // for every ingredient object
+          // for every ingredient object set the text from the ingredientsList
           for (let ing of ingredientList) {
             const text = `${ing.ingredient} ${ing.measure}`
             ing = document.createElement('li')
@@ -158,14 +197,16 @@ customElements.define('my-cookbook',
     }
 
     /**
+     * Creates an array of ingredients.
      *
-     * @param json
+     * @param {object} json - the json object.
+     * @returns {Array} - an array of objects (for every object the first value is the ingredient name and the second value is the ingredient measurements)
      */
-    createIngredientList (json) {
+    #createIngredientList (json) {
       // Initialize empty list of ingredients
       const ingredients = []
 
-      // Loop through each ingredient and measure in the JSON object
+      // Loop through each ingredient and measure in the JSON object while ingredients exit.
       let i = 1
       while (json['strIngredient' + i] && json['strMeasure' + i]) {
         const ingredient = json['strIngredient' + i]
@@ -181,9 +222,9 @@ customElements.define('my-cookbook',
     }
 
     /**
-     *
+     * Generates instructions for recipe by removing the hidden class from recipeDetails and hiding the menu screen.
      */
-    generateInstructions () {
+    #showRecipeDetails () {
       this.#menu.setAttribute('class', 'hidden')
       this.#menu.removeAttribute('id', '#menu')
       this.#recipeDetails.removeAttribute('class', 'hidden')

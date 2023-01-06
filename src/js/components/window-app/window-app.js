@@ -83,10 +83,13 @@ template.innerHTML = `
   </div>
 `
 
+/**
+ * Define a custom element.
+ */
 customElements.define('window-app',
 
   /**
-   *
+   * Represents a window-app element.
    */
   class extends HTMLElement {
     #windowAppHeader
@@ -98,7 +101,7 @@ customElements.define('window-app',
     static highestIndex = 0
 
     /**
-     *
+     * Creates an instance of the current type.
      */
     constructor () {
       super()
@@ -108,7 +111,7 @@ customElements.define('window-app',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      // selectors
+      // Query selectos
       this.#windowAppHeader = this.shadowRoot.querySelector('.window-app-header')
       this.#windowApp = this.shadowRoot.querySelector('.window-app')
       this.#closeButton = this.shadowRoot.querySelector('.window-app-close')
@@ -117,31 +120,50 @@ customElements.define('window-app',
       this.isDragging = false
 
       // Initial position of the element when the drag starts
-      this.initialX
-      this.initialY
+      this.initialX = 0
+      this.initialY = 0
 
       // Current position of the element
-      this.currentX
-      this.currentY
+      this.currentX = 0
+      this.currentY = 0
 
       // Offset from the initial position
       this.xOffset = 0
       this.yOffset = 0
 
-      this.#drag()
-
-      this.#appFocus()
-
-      this.#closeButton.addEventListener('click', (event) => {
-        this.#closeAppEvent()
+      // Event listeners
+      // Event listener for the mouse being down on window header
+      this.#windowAppHeader.addEventListener('mousedown', (event) => {
+        this.#handleMouseDown(event)
       })
-    } // CONSTRUCTOR END
 
-    // Event listener that is called when the user starts dragging the window app.
-    // Sets the initial position and flags the element as being dragged.
+      // Event listener for mouse up on window header
+      this.#windowAppHeader.addEventListener('mouseup', (event) => {
+        this.#handleMouseUp(event)
+      })
+
+      // Event listener for the mouse moving inside the browser window
+      window.addEventListener('mousemove', (event) => {
+        this.#handleMouseMove(event)
+      })
+
+      // Close button event listerners
+      this.#closeButton.addEventListener('click', (event) => {
+        this.remove()
+      })
+    }
+
     /**
+     * Used when the element is added to the DOM. Set the attribute active on clicked window, so it can be placed on top of the other applications (higher z index).
+     */
+    connectedCallback () {
+      this.#appFocus()
+    }
+
+    /**
+     * Event listener method, that is called when the user starts dragging the window app. Sets the initial position and flags the element as being dragged.
      *
-     * @param event
+     * @param {object} event - the event object.
      */
     #handleMouseDown (event) {
       // offsetLeft/offsetTop - number of pixels offset from the parent element
@@ -155,21 +177,19 @@ customElements.define('window-app',
       this.isDragging = true
     }
 
-    // Event listener that is called when the user releases the mouse button.
-    // Resets the initial position and flags the element as not being dragged.
     /**
+     * Event listener method, that is called when the user releases the mouse button. Resets the initial position and flags the element as not being dragged.
      *
-     * @param event
+     * @param {object} event - the event object.
      */
     #handleMouseUp (event) {
       this.isDragging = false
     }
 
-    // event listener that is called when the user moves the mouse while dragging the element
-    // update the position of the element based on the mouse movement
     /**
+     * Event listener method, that is called when the user moves the mouse while dragging the element. Updates the position of the element based on the mouse movement.
      *
-     * @param event
+     * @param {object} event - the event object.
      */
     #handleMouseMove (event) {
       if (this.isDragging) {
@@ -204,30 +224,6 @@ customElements.define('window-app',
       }
     }
 
-    // mouse down, mouse up, and mouse move events on the window app header element
-    /**
-     *
-     */
-    #drag () {
-      this.#windowAppHeader.addEventListener('mousedown', (event) => {
-        this.#handleMouseDown(event)
-      })
-      this.#windowAppHeader.addEventListener('mouseup', (event) => {
-        this.#handleMouseUp(event)
-      })
-      window.addEventListener('mousemove', (event) => {
-        this.#handleMouseMove(event)
-      })
-    }
-
-    /**
-     * Event triggered when the close button in clicked. Bubbles to pwd-app. Removes the element from the DOM/shadow DOM.
-     */
-    #closeAppEvent () {
-      this.#closeButton.dispatchEvent(new window.CustomEvent('closeApp', { bubbles: true }))
-      this.remove()
-    }
-
     /**
      * Set the app to be in focus.
      */
@@ -250,8 +246,8 @@ customElements.define('window-app',
      * Called when observed attribute changes.
      *
      * @param {string} name - The attribute's name.
-     * @param oldValue
-     * @param {*} newValue - The new value.
+     * @param {string} oldValue - The attribute's old value.
+     * @param {string} newValue - The new value.
      */
     attributeChangedCallback (name, oldValue, newValue) {
       if (name === 'active' && newValue !== null) {

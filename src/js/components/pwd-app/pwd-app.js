@@ -91,21 +91,38 @@ template.innerHTML = `
        <div id="app3" class="app-icon"></div>
     </div>
 `
-
+/**
+ * Define a custom element.
+ */
 customElements.define('pwd-app',
 
   /**
-   *
+   * Represents a pwd-app element.
    */
   class extends HTMLElement {
-    #messagesApp
-
-    #myCookbook
-
-    #memoryApp
+    /**
+     * The messages-app icon.
+     *
+     * @type {HTMLDivElement}
+     */
+    #messagesAppIcon
 
     /**
+     * The my-cookbook icon.
      *
+     * @type {HTMLDivElement}
+     */
+    #myCookbookIcon
+
+    /**
+     * The memory-app icon.
+     *
+     * @type {HTMLDivElement}
+     */
+    #memoryAppIcon
+
+    /**
+     * Creates an instance of the current type.
      */
     constructor () {
       super()
@@ -115,42 +132,37 @@ customElements.define('pwd-app',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      this.#messagesApp = this.shadowRoot.querySelector('#app1')
-      this.#myCookbook = this.shadowRoot.querySelector('#app2')
-      this.#memoryApp = this.shadowRoot.querySelector('#app3')
+      // Query selectors
+      this.#messagesAppIcon = this.shadowRoot.querySelector('#app1')
+      this.#myCookbookIcon = this.shadowRoot.querySelector('#app2')
+      this.#memoryAppIcon = this.shadowRoot.querySelector('#app3')
 
-      // event listeners
-      // closing the application event listener
-      this.addEventListener('closeApp', (event))
-
-      // click focus
-    }
-
-    /**
-     * Used when the element is added to the DOM.
-     */
-    connectedCallback () {
-      this.#messagesApp.addEventListener('click', (event) => {
+      // Event listeners
+      // Event listener for clicking on the messages app icon
+      this.#messagesAppIcon.addEventListener('click', (event) => {
         this.#createApp('window-app', 'messages-app', 'Messages')
         this.#lastWindowActive()
       })
-      this.#myCookbook.addEventListener('click', (event) => {
+
+      // Event listener for clicking on the cookbok app icon
+      this.#myCookbookIcon.addEventListener('click', (event) => {
         this.#createApp('window-app', 'my-cookbook', 'Coobook')
         this.#lastWindowActive()
       })
-      this.#memoryApp.addEventListener('click', (event) => {
+
+      // Event listener for clicking on the memory app icon
+      this.#memoryAppIcon.addEventListener('click', (event) => {
         this.#createApp('window-app', 'memory-app', 'Memory game')
         this.#lastWindowActive()
       })
     }
 
     /**
-     * Method that opens the apps by creating them. Whenever an app is created the attribute is set to active so that the app is on top.  Sets the name of the app by creating the respective element and appending it to the app header.
+     * Method that "opens" the apps by creating them. Whenever an app is created the attribute is set to active so that the app is on top.  Sets the name of the app by creating the respective element and appending it to the app header.
      *
-     * @param {*} window
-     * @param win
-     * @param {*} app
-     * @param appName
+     * @param {string} win - the name of the window application
+     * @param {string} app - the name of the specific application.
+     * @param {string} appName - the application's name present in the header.
      */
     #createApp (win, app, appName) {
       // Create the window and app and append the app inside the window
@@ -173,7 +185,7 @@ customElements.define('pwd-app',
     }
 
     /**
-     *
+     * On creating a window, removes the active attribute from all others, except the last one created.
      */
     #lastWindowActive () {
       const appWindows = this.shadowRoot.querySelectorAll('window-app')

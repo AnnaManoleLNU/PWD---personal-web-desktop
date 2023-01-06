@@ -1,12 +1,6 @@
 # memory-app
 
-A web component that is used to play of game of memory.
-
-
-## Life cycles
-
-### connectedCallback 
-Listerns to the `flip` event triggered in another web component and uses `#gameLogic()` to implement the game's logic.
+A web component that represents a memory app.
 
 
 ## Attributes

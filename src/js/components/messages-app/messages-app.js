@@ -79,25 +79,62 @@ template.innerHTML = `
 </form>
 
 `
-
+/**
+ * Define custom element.
+ */
 customElements.define('messages-app',
 
   /**
-   *
+   * Represents a messages-app element.
    */
   class extends HTMLElement {
+    /**
+     * The username input field.
+     *
+     * @type {HTMLInputElement}
+     */
     #usernameInput
 
+    /**
+     * The username the user has chosen/will choose.
+     *
+     * @type {string}
+     */
     #username
 
+    /**
+     * The username form.
+     *
+     * @type {HTMLFormElement}
+     */
     #usernameForm
 
+    /**
+     * The messages input field.
+     *
+     * @type {HTMLInputElement}
+     */
     #messagesInput
 
+    /**
+     * The messages form.
+     *
+     * @type {HTMLFormElement}
+     */
     #messagesForm
 
+    /**
+     * The messages container.
+     *
+     * @type {HTMLDivElement}
+     */
     #messages
 
+    /**
+     * The web socket used to send messages to the server.
+     *
+     * @type {object}
+     */
     #socket
 
     #emojiButton
@@ -107,7 +144,7 @@ customElements.define('messages-app',
     #emojiPickerContainer
 
     /**
-     *
+     * Creates an instance of the current type.
      */
     constructor () {
       super()
@@ -117,37 +154,20 @@ customElements.define('messages-app',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      // selectors
+      // Query selectors
       this.#usernameInput = this.shadowRoot.querySelector('#username-input')
       this.#usernameForm = this.shadowRoot.querySelector('#username-form')
-
       this.#messagesInput = this.shadowRoot.querySelector('#messages-input')
-
       this.#messagesForm = this.shadowRoot.querySelector('#messages-form')
-
       this.#messages = this.shadowRoot.querySelector('.messages')
 
-      // For when a username exists already from local storage
-      this.#username = localStorage.getItem('username')
-
-      // emoji support
+      // Emoji elements selectors and picker creation
       this.#emojiButton = this.shadowRoot.querySelector('#emoji-button')
       this.#picker = new Picker()
       this.#emojiPickerContainer = this.shadowRoot.querySelector('#emoji-picker-container')
       this.#emojiPickerContainer.appendChild(this.#picker)
-      // this.#emojiPickerContainer.setAttribute('class', 'hidden')
-
-      // Check if a username does not exist in the local storage and if not show the username form so the user can populate the local storage
-      if (!this.#username) {
-        this.#usernameForm.removeAttribute('class', 'hidden')
-      } else {
-        // If the username is stored, hide the username form and show the messages form
-        this.#usernameForm.setAttribute('class', 'hidden')
-        this.#messagesForm.removeAttribute('class', 'hidden')
-      }
 
       // Event listeners
-
       // Event listener for submitting username
       this.#usernameForm.addEventListener('submit', event => {
         event.preventDefault()
@@ -169,12 +189,12 @@ customElements.define('messages-app',
           key: 'eDBE76deU7L0H9mEBgxUKVR0VCnq0XBd'
         }
 
+        // on submit send the data and reset the messages input
         this.#socket.send(JSON.stringify(data))
-
         this.#messagesInput.value = ''
       })
 
-      // Socket message event
+      // Socket message event listener
       this.#socket = new WebSocket('wss://courselab.lnu.se/message-app/socket')
       this.#socket.addEventListener('message', event => {
         this.#handleMessage(event)
@@ -188,26 +208,53 @@ customElements.define('messages-app',
         this.#messagesInput.value += emoji.detail.unicode
       })
 
-      // Emoji support
+      // Emoji button event listener
       this.#emojiButton.addEventListener('click', (event) => {
         this.#emojiPickerContainer.classList.toggle('hidden')
       })
 
+      // Event listener for emoji picker container
       // Stop propagation, so that the picker does not get closed on clicking on the tabs
       this.#emojiPickerContainer.addEventListener('click', event => {
         event.stopPropagation()
       })
-    } // CONSTRUCTOR END
+    }
 
     /**
+     * Used when the element was added to the DOM.
+     */
+    connectedCallback () {
+      this.#setUsername()
+    }
+
+    /**
+     * Sets the conditions for a username.
+     */
+    #setUsername () {
+      // For when a username exists already from local storage
+      this.#username = localStorage.getItem('username')
+
+      // Check if a username does not exist in the local storage and if not show the username form so the user can populate the local storage
+      if (!this.#username) {
+        this.#usernameForm.removeAttribute('class', 'hidden')
+      } else {
+        // If the username is stored, hide the username form and show the messages form
+        this.#usernameForm.setAttribute('class', 'hidden')
+        this.#messagesForm.removeAttribute('class', 'hidden')
+      }
+    }
+
+    /**
+     * A method that only allows parses the JSON data, creates a div for every message and records the time the message was sent. Only the last 20 messages are displayed in chat.
      *
-     * @param event
+     * @param {object} event - the event data object.
      */
     #handleMessage (event) {
       const message = JSON.parse(event.data)
       const messageElement = document.createElement('div')
       const date = new Date()
 
+      // Only if the message is not heartbeat, format the message and append it to the messages container.
       if (message.type !== 'heartbeat') {
         messageElement.textContent = `${date.toLocaleTimeString()} ${message.username}: ${message.data}`
         this.#messages.appendChild(messageElement)

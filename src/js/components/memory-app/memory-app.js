@@ -193,7 +193,7 @@ customElements.define('memory-app',
       this.attachShadow({ mode: 'open' })
         .appendChild(template.content.cloneNode(true))
 
-      // Get the tile element in the shadow root.
+      // Query selectors
       this.#options = this.shadowRoot.querySelector('.options')
       this.#game = this.shadowRoot.querySelector('.game')
       this.#twobytwo = this.shadowRoot.querySelector('#twobytwo')
@@ -203,7 +203,8 @@ customElements.define('memory-app',
       this.#endMessage = this.shadowRoot.querySelector('#end-message')
       this.#playAgainButton = this.shadowRoot.querySelector('button')
 
-      // Listen to click events.
+      // Event listeners
+      // Listen to click events
       this.#twobytwo.addEventListener('click', (event) => {
         event.preventDefault()
         this.#gameInitialize(2, 2, 'game-easy')
@@ -219,7 +220,7 @@ customElements.define('memory-app',
         this.#gameInitialize(4, 4, 'game-hard')
       })
 
-      // Game over
+      // Game over event listener
       this.addEventListener('memory-game:game-over', () => {
         this.#endMessage.removeAttribute('class', 'hidden')
         this.#game.setAttribute('class', 'hidden')
@@ -229,12 +230,8 @@ customElements.define('memory-app',
         this.#endMessage.querySelector('h4').textContent = `You win! It took you ${this.#totalTime} seconds and ${this.#numberOfMatches} attempts.`
         this.#clickButton()
       })
-    } // CONSTRUCTOR END
 
-    /**
-     * Used when the element is added to the DOM. Listens to the flip event, thereafter calling the #gameLogic method.
-     */
-    connectedCallback () {
+      // Listens to the flip event, thereafter calling the #gameLogic method.
       this.#game.addEventListener('memory-tile:flip', () => this.#gameLogic())
     }
 
@@ -381,6 +378,7 @@ customElements.define('memory-app',
       for (const tile of this.#tiles) {
         const img = tile.firstChild
         img.setAttribute('src', shuffledScrs[index])
+        img.setAttribute('alt', shuffledScrs[index].slice(5, shuffledScrs[index].length - 4))
         index++
       }
     }

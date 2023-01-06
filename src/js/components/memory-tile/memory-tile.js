@@ -1,5 +1,5 @@
 /**
- * The memory-app web component module.
+ * The memory-tile web component module.
  *
  * @author Anna Manole <am224wd@student.lnu.se>
  * @version 1.1.0
@@ -55,8 +55,6 @@ template.innerHTML = `
       box-shadow: 0px 0 10px #ccc;
       /* flipping */
       transform-style: preserve-3d;
-      /* Remove this for getting the end screen imediately, but without fancy animation */
-      /* transition: 1s; */
     }
 
     #tile[disabled] {
@@ -105,21 +103,25 @@ template.innerHTML = `
 
   </style>
 
-    <button  part="tile-main" id="tile" >
-      <div  part="tile-front" id="front">
+    <button id="tile" >
+      <div id="front">
         <slot></slot>
       </div>
-      <div part="tile-back" id="back"></div>
+      <div id="back"></div>
     </button>
 `
-
+/**
+ * Define custom element.
+ */
 customElements.define('memory-tile',
   /**
-   * Represents a memory tile.
+   * Represents a memory-tile element.
    */
   class extends HTMLElement {
     /**
      * The element representing the tile.
+     *
+     * @type {HTMLElement}
      */
     #tile
 
@@ -139,7 +141,7 @@ customElements.define('memory-tile',
 
       // Listen to click events.
       this.addEventListener('click', (event) => {
-        // Flip if main button
+        // Flip if main button (left-click).
         if (event.button === 0) {
           this.#flip()
         }
