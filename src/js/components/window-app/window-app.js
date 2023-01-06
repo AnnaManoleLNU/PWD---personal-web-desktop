@@ -21,6 +21,8 @@ template.innerHTML = `
       border-radius: 5px;
       overflow: hidden;
       box-shadow: 10px 10px 10px 10px rgba(0, 0, 0, 0.5);
+      top: 200px;
+      left: 200px;
     }
     
     /* Style for the window app header */
@@ -70,7 +72,6 @@ template.innerHTML = `
 
   </style>
 
-
   <div class="window-app">
     <div class="window-app-header">
       <div class="window-app-close"></div>
@@ -80,14 +81,14 @@ template.innerHTML = `
       <slot></slot>
     </div>
   </div>
- 
-
 `
 
 customElements.define('window-app',
 
+  /**
+   *
+   */
   class extends HTMLElement {
-
     #windowAppHeader
 
     #windowApp
@@ -96,7 +97,10 @@ customElements.define('window-app',
 
     static highestIndex = 0
 
-    constructor() {
+    /**
+     *
+     */
+    constructor () {
       super()
 
       // Attach a shadow DOM tree to this element and
@@ -131,62 +135,95 @@ customElements.define('window-app',
       this.#closeButton.addEventListener('click', (event) => {
         this.#closeAppEvent()
       })
-    } // CONSTRUCTOR END 
-
+    } // CONSTRUCTOR END
 
     // Event listener that is called when the user starts dragging the window app.
     // Sets the initial position and flags the element as being dragged.
-    #handleMouseDown(event) {
-      this.initialX = event.clientX - this.xOffset
-      this.initialY = event.clientY - this.yOffset
+    /**
+     *
+     * @param event
+     */
+    #handleMouseDown (event) {
+      // offsetLeft/offsetTop - number of pixels offset from the parent element
+      this.initialX = this.#windowApp.offsetLeft
+      this.initialY = this.#windowApp.offsetTop
 
-      if (event.target === this.#windowAppHeader) {
-        this.isDragging = true
-        this.currentX = event.clientX
-        this.currentY = event.clientY
-      }
+      // client x/y - the mouse coordinates on the x and y axis
+      this.xOffset = event.clientX - this.#windowApp.offsetLeft
+      this.yOffset = event.clientY - this.#windowApp.offsetTop
+
+      this.isDragging = true
     }
 
     // Event listener that is called when the user releases the mouse button.
     // Resets the initial position and flags the element as not being dragged.
-    #handleMouseUp() {
-      this.initialX = this.currentX
-      this.initialY = this.currentY
-
+    /**
+     *
+     * @param event
+     */
+    #handleMouseUp (event) {
       this.isDragging = false
     }
 
     // event listener that is called when the user moves the mouse while dragging the element
     // update the position of the element based on the mouse movement
-    #handleMouseMove(event) {
+    /**
+     *
+     * @param event
+     */
+    #handleMouseMove (event) {
       if (this.isDragging) {
         event.preventDefault()
-        this.xOffset = event.clientX - this.initialX
-        this.yOffset = event.clientY - this.initialY
 
-        // maximum and minimum values for the left and top styles
-        const minTop = 0
-        const maxTop = window.innerHeight - this.#windowApp.offsetHeight
-        const minLeft = 0
-        const maxLeft = window.innerWidth - this.#windowApp.offsetWidth
+        //  Calculate the current position of the window app based on the distance the mouse has moved from the initial position
+        this.currentX = event.clientX - this.xOffset
+        this.currentY = event.clientY - this.yOffset
 
-        // the element stays within the allowed area
-        this.#windowApp.style.top = Math.min(Math.max(this.yOffset, minTop), maxTop) + 'px'
-        this.#windowApp.style.left = Math.min(Math.max(this.xOffset, minLeft), maxLeft) + 'px'
+        // Constrain the window app within the browser window
+        // if the current x position of window app < maximum allow position (0 for the edge of the browser)
+        if (this.currentX < 0) {
+          this.currentX = 0
+        }
+
+        // if the current x position of window app > maximum allow position (width of browser - width of window app)
+        if (this.currentX > window.innerWidth - this.#windowApp.offsetWidth) {
+          this.currentX = window.innerWidth - this.#windowApp.offsetWidth
+        }
+
+        // same behaviour for y
+        if (this.currentY < 0) {
+          this.currentY = 0
+        }
+        if (this.currentY > window.innerHeight - this.#windowApp.offsetHeight) {
+          this.currentY = window.innerHeight - this.#windowApp.offsetHeight
+        }
+
+        // Set the new position of the window app with style.left and style.top
+        this.#windowApp.style.left = `${this.currentX}px`
+        this.#windowApp.style.top = `${this.currentY}px`
       }
     }
 
     // mouse down, mouse up, and mouse move events on the window app header element
-    #drag() {
-      this.#windowAppHeader.addEventListener('mousedown', this.#handleMouseDown.bind(this))
-      this.#windowAppHeader.addEventListener('mouseup', this.#handleMouseUp.bind(this))
-      window.addEventListener('mousemove', this.#handleMouseMove.bind(this))
+    /**
+     *
+     */
+    #drag () {
+      this.#windowAppHeader.addEventListener('mousedown', (event) => {
+        this.#handleMouseDown(event)
+      })
+      this.#windowAppHeader.addEventListener('mouseup', (event) => {
+        this.#handleMouseUp(event)
+      })
+      window.addEventListener('mousemove', (event) => {
+        this.#handleMouseMove(event)
+      })
     }
 
     /**
      * Event triggered when the close button in clicked. Bubbles to pwd-app. Removes the element from the DOM/shadow DOM.
      */
-    #closeAppEvent() {
+    #closeAppEvent () {
       this.#closeButton.dispatchEvent(new window.CustomEvent('closeApp', { bubbles: true }))
       this.remove()
     }
@@ -194,33 +231,33 @@ customElements.define('window-app',
     /**
      * Set the app to be in focus.
      */
-    #appFocus() {
+    #appFocus () {
       this.addEventListener('click', (event) => {
         this.setAttribute('active', '')
       })
-    }   
+    }
 
     /**
      * Attributes to monitor for changes.
      *
      * @returns {string[]} A string array of attributes to monitor.
      */
-    static get observedAttributes() {
+    static get observedAttributes () {
       return ['active']
     }
 
     /**
-    * Called when observed attribute changes.
-    *
-    * @param {string} name - The attribute's name.
-    * @param {*} newValue - The new value.
-    */
-    attributeChangedCallback(name, oldValue, newValue) {
+     * Called when observed attribute changes.
+     *
+     * @param {string} name - The attribute's name.
+     * @param oldValue
+     * @param {*} newValue - The new value.
+     */
+    attributeChangedCallback (name, oldValue, newValue) {
       if (name === 'active' && newValue !== null) {
         // use constructor to access the static property in the class
         this.#windowApp.style.zIndex = this.constructor.highestIndex++
       }
     }
-
   }
 )

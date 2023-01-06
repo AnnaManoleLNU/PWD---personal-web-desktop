@@ -94,85 +94,91 @@ template.innerHTML = `
 
 customElements.define('pwd-app',
 
-    class extends HTMLElement {
+  /**
+   *
+   */
+  class extends HTMLElement {
+    #messagesApp
 
-        #messagesApp
+    #myCookbook
 
-        #myCookbook
+    #memoryApp
 
-        #memoryApp
+    /**
+     *
+     */
+    constructor () {
+      super()
 
-        constructor() {
-            super()
+      // Attach a shadow DOM tree to this element and
+      // append the template to the shadow root.
+      this.attachShadow({ mode: 'open' })
+        .appendChild(template.content.cloneNode(true))
 
-            // Attach a shadow DOM tree to this element and
-            // append the template to the shadow root.
-            this.attachShadow({ mode: 'open' })
-                .appendChild(template.content.cloneNode(true))
+      this.#messagesApp = this.shadowRoot.querySelector('#app1')
+      this.#myCookbook = this.shadowRoot.querySelector('#app2')
+      this.#memoryApp = this.shadowRoot.querySelector('#app3')
 
-            this.#messagesApp = this.shadowRoot.querySelector('#app1')
-            this.#myCookbook = this.shadowRoot.querySelector('#app2')
-            this.#memoryApp = this.shadowRoot.querySelector('#app3')
+      // event listeners
+      // closing the application event listener
+      this.addEventListener('closeApp', (event))
 
-            // event listeners
-            // closing the application event listener
-            this.addEventListener('closeApp', (event))
-
-            // click focus
-
-        }
-
-        /**
-         * Used when the element is added to the DOM.
-         */
-        connectedCallback() {
-            this.#messagesApp.addEventListener('click', (event) => {
-                this.#createApp('window-app', 'messages-app', 'Messages')
-                this.#lastWindowActive()
-            })
-            this.#myCookbook.addEventListener('click', (event) => {
-                this.#createApp('window-app', 'my-cookbook', 'Coobook')
-                this.#lastWindowActive()
-            })
-            this.#memoryApp.addEventListener('click', (event) => {
-                this.#createApp('window-app', 'memory-app', 'Memory game')
-                this.#lastWindowActive()
-            })
-
-        }
-
-        /**
-         * Method that opens the apps by creating them. Whenever an app is created the attribute is set to active so that the app is on top.  Sets the name of the app by creating the respective element and appending it to the app header.
-         *
-         * @param {*} window 
-         * @param {*} app 
-         */
-        #createApp(win, app, appName) {
-            // Create the window and app and append the app inside the window
-            const window = document.createElement(win)
-            const application = document.createElement(app)
-            window.appendChild(application)
-            window.setAttribute('active', '')
-            this.shadowRoot.appendChild(window)
-
-            // listen for focus           
-
-            // Set the name
-            const appNameContainer = document.createElement('div')
-            const appNameParagraph = document.createElement('p')
-            appNameParagraph.style.color = 'black'
-            appNameParagraph.style.fontWeight = 'bold'
-            appNameContainer.appendChild(appNameParagraph)
-            appNameParagraph.textContent = appName
-            const header = window.shadowRoot.querySelector('.window-app-header')
-            const button = window.shadowRoot.querySelector('.window-app-close')
-            header.insertBefore(appNameContainer, button)
-        }
-
-        #lastWindowActive() {
-            const appWindows = this.shadowRoot.querySelectorAll('window-app')
-            const windowsArray = Array.from(appWindows)
-            windowsArray.slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
-        }
+      // click focus
     }
+
+    /**
+     * Used when the element is added to the DOM.
+     */
+    connectedCallback () {
+      this.#messagesApp.addEventListener('click', (event) => {
+        this.#createApp('window-app', 'messages-app', 'Messages')
+        this.#lastWindowActive()
+      })
+      this.#myCookbook.addEventListener('click', (event) => {
+        this.#createApp('window-app', 'my-cookbook', 'Coobook')
+        this.#lastWindowActive()
+      })
+      this.#memoryApp.addEventListener('click', (event) => {
+        this.#createApp('window-app', 'memory-app', 'Memory game')
+        this.#lastWindowActive()
+      })
+    }
+
+    /**
+     * Method that opens the apps by creating them. Whenever an app is created the attribute is set to active so that the app is on top.  Sets the name of the app by creating the respective element and appending it to the app header.
+     *
+     * @param {*} window
+     * @param win
+     * @param {*} app
+     * @param appName
+     */
+    #createApp (win, app, appName) {
+      // Create the window and app and append the app inside the window
+      const windowApp = document.createElement(win)
+      const application = document.createElement(app)
+      windowApp.appendChild(application)
+      windowApp.setAttribute('active', '')
+      this.shadowRoot.appendChild(windowApp)
+
+      // Set the name
+      const appNameContainer = document.createElement('div')
+      const appNameParagraph = document.createElement('p')
+      appNameParagraph.style.color = 'black'
+      appNameParagraph.style.fontWeight = 'bold'
+      appNameContainer.appendChild(appNameParagraph)
+      appNameParagraph.textContent = appName
+      const header = windowApp.shadowRoot.querySelector('.window-app-header')
+      const button = windowApp.shadowRoot.querySelector('.window-app-close')
+      header.insertBefore(appNameContainer, button)
+    }
+
+    /**
+     *
+     */
+    #lastWindowActive () {
+      const appWindows = this.shadowRoot.querySelectorAll('window-app')
+      const windowsArray = Array.from(appWindows)
+      windowsArray.slice(0, -1).forEach(appWindow => appWindow.removeAttribute('active'))
+    }
+  }
 )

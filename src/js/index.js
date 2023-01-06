@@ -5,7 +5,6 @@
  * @version 1.0.0
  */
 
-
 import './components/memory-app/index.js'
 import './components/messages-app/index.js'
 import './components/my-cookbook/index.js'

@@ -69,109 +69,123 @@ template.innerHTML = `
 
 customElements.define('my-cookbook',
 
-    class extends HTMLElement {
-        #menu
+  /**
+   *
+   */
+  class extends HTMLElement {
+    #menu
 
-        #recipeDetails
+    #recipeDetails
 
-        #recipeList
+    #recipeList
 
-        #recipeTitle
+    #recipeTitle
 
-        #instructions
+    #instructions
 
-        #ingredients
+    #ingredients
 
-        #button
+    #button
 
-        constructor() {
-            super()
+    /**
+     *
+     */
+    constructor () {
+      super()
 
-            // Attach a shadow DOM tree to this element and
-            // append the template to the shadow root.
-            this.attachShadow({ mode: 'open' })
-                .appendChild(template.content.cloneNode(true))
+      // Attach a shadow DOM tree to this element and
+      // append the template to the shadow root.
+      this.attachShadow({ mode: 'open' })
+        .appendChild(template.content.cloneNode(true))
 
-            this.#menu = this.shadowRoot.querySelector('#menu')
-            this.#recipeDetails = this.shadowRoot.querySelector('#recipedetails')
-            this.#recipeList = this.shadowRoot.querySelector('#recipelist')
-            this.#recipeTitle = this.shadowRoot.querySelector('#title')
-            this.#instructions = this.shadowRoot.querySelector('#instr')
-            this.#ingredients = this.shadowRoot.querySelector('#ingredients')
-            this.#button = this.shadowRoot.querySelector('button')
+      this.#menu = this.shadowRoot.querySelector('#menu')
+      this.#recipeDetails = this.shadowRoot.querySelector('#recipedetails')
+      this.#recipeList = this.shadowRoot.querySelector('#recipelist')
+      this.#recipeTitle = this.shadowRoot.querySelector('#title')
+      this.#instructions = this.shadowRoot.querySelector('#instr')
+      this.#ingredients = this.shadowRoot.querySelector('#ingredients')
+      this.#button = this.shadowRoot.querySelector('button')
 
-            this.#button.addEventListener('click', (event) => {
-                event.preventDefault()
-                this.#recipeDetails.setAttribute('class', 'hidden')
-                this.#menu.setAttribute('id', 'menu')
-            })
+      this.#button.addEventListener('click', (event) => {
+        event.preventDefault()
+        this.#recipeDetails.setAttribute('class', 'hidden')
+        this.#menu.setAttribute('id', 'menu')
+      })
+    }
 
-        }
+    /**
+     *
+     */
+    async connectedCallback () {
+      // Fetch 3 random recipes
+      for (let i = 0; i < 3; i++) {
+        // Get recipes from the API
+        const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php')
+        const recipe = await response.json()
 
-        async connectedCallback() {
-            // Fetch 3 random recipes
-            for (let i = 0; i < 3; i++) {
-                // Get recipes from the API
-                const response = await fetch('https://www.themealdb.com/api/json/v1/1/random.php')
-                const recipe = await response.json()
+        // Recipe titles
+        const selectedRecipeTitle = recipe.meals[0].strMeal
+        const recipeOption = document.createElement('p')
+        recipeOption.textContent = selectedRecipeTitle
+        this.#recipeList.appendChild(recipeOption)
+        recipeOption.setAttribute('class', 'recipe-item')
 
-                // Recipe titles
-                const selectedRecipeTitle = recipe.meals[0].strMeal
-                const recipeOption = document.createElement('p')
-                recipeOption.textContent = selectedRecipeTitle
-                this.#recipeList.appendChild(recipeOption)
-                recipeOption.setAttribute('class', 'recipe-item')
+        // create ingredient list
+        const ingredientList = this.createIngredientList(recipe.meals[0])
 
-                // create ingredient list 
-                const ingredientList = this.createIngredientList(recipe.meals[0])
+        // Event listener for clicking on a recipe option
+        recipeOption.addEventListener('click', (event) => {
+          event.preventDefault()
+          this.generateInstructions()
+          this.#recipeTitle.textContent = selectedRecipeTitle
+          this.#instructions.textContent = recipe.meals[0].strInstructions
 
-                // Event listener for clicking on a recipe option
-                recipeOption.addEventListener('click', (event) => {
-                    event.preventDefault()
-                    this.generateInstructions()
-                    this.#recipeTitle.textContent = selectedRecipeTitle
-                    this.#instructions.textContent = recipe.meals[0].strInstructions
+          // Clear the ingredient list before adding new ingredients
+          // While it has a first child, remove the child
+          while (this.#ingredients.firstChild) {
+            this.#ingredients.removeChild(this.#ingredients.firstChild)
+          }
 
-                    // Clear the ingredient list before adding new ingredients
-                    // While it has a first child, remove the child
-                    while (this.#ingredients.firstChild) {
-                        this.#ingredients.removeChild(this.#ingredients.firstChild)
-                    }
+          // for every ingredient object
+          for (let ing of ingredientList) {
+            const text = `${ing.ingredient} ${ing.measure}`
+            ing = document.createElement('li')
+            ing.textContent = text
+            this.#ingredients.appendChild(ing)
+          }
+        })
+      }
+    }
 
-                    // for every ingredient object
-                    for (let ing of ingredientList) {
-                        const text = `${ing.ingredient} ${ing.measure}`
-                        ing = document.createElement('li')
-                        ing.textContent = text
-                        this.#ingredients.appendChild(ing)
-                    }
-                })
-            }
-        }
+    /**
+     *
+     * @param json
+     */
+    createIngredientList (json) {
+      // Initialize empty list of ingredients
+      const ingredients = []
 
-        createIngredientList(json) {
-            // Initialize empty list of ingredients
-            const ingredients = []
+      // Loop through each ingredient and measure in the JSON object
+      let i = 1
+      while (json['strIngredient' + i] && json['strMeasure' + i]) {
+        const ingredient = json['strIngredient' + i]
+        const measure = json['strMeasure' + i]
 
-            // Loop through each ingredient and measure in the JSON object
-            let i = 1
-            while (json['strIngredient' + i] && json['strMeasure' + i]) {
-                const ingredient = json['strIngredient' + i]
-                const measure = json['strMeasure' + i]
+        // Add the ingredient and measure to the list
+        ingredients.push({ ingredient, measure })
 
-                // Add the ingredient and measure to the list
-                ingredients.push({ ingredient: ingredient, measure: measure })
+        // Increment the counter to move on to the next ingredient and measure
+        i++
+      }
+      return ingredients
+    }
 
-                // Increment the counter to move on to the next ingredient and measure
-                i++
-            }
-            return ingredients
-        }
-
-        generateInstructions() {
-            this.#menu.setAttribute('class', 'hidden')
-            this.#menu.removeAttribute('id', '#menu')
-            this.#recipeDetails.removeAttribute('class', 'hidden')
-        }
-
-    })
+    /**
+     *
+     */
+    generateInstructions () {
+      this.#menu.setAttribute('class', 'hidden')
+      this.#menu.removeAttribute('id', '#menu')
+      this.#recipeDetails.removeAttribute('class', 'hidden')
+    }
+  })

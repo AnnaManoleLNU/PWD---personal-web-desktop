@@ -71,7 +71,7 @@ template.innerHTML = `
     <h1>Memory game</h1>
     <h3>Select game difficulty</h3>
       <p id="twobytwo">2x2</p>
-      <p id="fourbytwo">4x2</p>
+      <p id="twobyfour">4x2</p>
       <p id="fourbyfour">4x4</p>
   </div>
 
@@ -83,41 +83,109 @@ template.innerHTML = `
   </div>  
 `
 
+/**
+ * Define custom element.
+ */
 customElements.define('memory-app',
   /**
-   * Represents a flipping tile.
+   * Represents a the memory-app element.
    */
   class extends HTMLElement {
+    /**
+     * The start screen div including the options to play the game.
+     *
+     * @type {HTMLDivElement}
+     */
     #options
 
+    /**
+     * The game instance.
+     *
+     * @type {HTMLDivElement}
+     */
     #game
 
+    /**
+     * The choice for creating a 2 x 2 game grid.
+     *
+     * @type {HTMLParagraphElement}
+     */
     #twobytwo
 
-    #fourbytwo
+    /**
+     * The choice for creating a 2 x 4 game grid.
+     *
+     * @type {HTMLParagraphElement}
+     */
+    #twobyfour
 
+    /**
+     * The choice for creating a 4 x 4 game grid.
+     *
+     * @type {HTMLParagraphElement}
+     */
     #fourbyfour
 
+    /**
+     * The array of images to be used in the game.
+     *
+     * @type {Array}
+     */
     #images = ['/img/cake.png', '/img/sundae.png', '/img/sushi.png', '/img/boba.png', '/img/pizza.png', '/img/hotdog.png', '/img/icecream.png', '/img/coffee.png']
 
+    /**
+     * The tiles created by using the memory-tile web component.
+     *
+     * @type {HTMLElement}
+     */
     #tiles
 
-    #tile
-
+    /**
+     * The number of matches it took for the user to match all the pairs.
+     *
+     * @type {number}
+     */
     #numberOfMatches = 0
 
+    /**
+     * The end message displayed after the user wins the game.
+     *
+     * @type {HTMLDivElement}
+     */
     #endMessage
 
+    /**
+     * The play again button displayed after the user wins the game.
+     *
+     * @type {HTMLButtonElement}
+     */
+    #playAgainButton
+
+    /**
+     * The start time of the game.
+     *
+     * @type {number}
+     */
     #startTime
 
+    /**
+     * The end time of the game.
+     *
+     * @type {number}
+     */
     #endTime
 
+    /**
+     * How long did it take for a user to complete the game.
+     *
+     * @type {number}
+     */
     #totalTime
 
     /**
      * Creates an instance of the current type.
      */
-    constructor() {
+    constructor () {
       super()
 
       // Attach a shadow DOM tree to this element and
@@ -129,43 +197,26 @@ customElements.define('memory-app',
       this.#options = this.shadowRoot.querySelector('.options')
       this.#game = this.shadowRoot.querySelector('.game')
       this.#twobytwo = this.shadowRoot.querySelector('#twobytwo')
-      this.#fourbytwo = this.shadowRoot.querySelector('#fourbytwo')
+      this.#twobyfour = this.shadowRoot.querySelector('#twobyfour')
       this.#fourbyfour = this.shadowRoot.querySelector('#fourbyfour')
       this.#tiles = this.shadowRoot.querySelectorAll('memory-tile')
       this.#endMessage = this.shadowRoot.querySelector('#end-message')
+      this.#playAgainButton = this.shadowRoot.querySelector('button')
 
       // Listen to click events.
       this.#twobytwo.addEventListener('click', (event) => {
         event.preventDefault()
-        this.#options.setAttribute('class', 'hidden')
-        this.#game.removeAttribute('class', 'hidden')
-        this.#game.setAttribute('id', 'game-easy')
-        this.#createTiles(2, 2)
-        this.#shuffleImages()
-        this.#gameLogic()
-        this.#startTime = Date.now()
+        this.#gameInitialize(2, 2, 'game-easy')
       })
 
-      this.#fourbytwo.addEventListener('click', (event) => {
+      this.#twobyfour.addEventListener('click', (event) => {
         event.preventDefault()
-        this.#options.setAttribute('class', 'hidden')
-        this.#game.removeAttribute('class', 'hidden')
-        this.#game.setAttribute('id', 'game-medium')
-        this.#createTiles(2, 4)
-        this.#shuffleImages()
-        this.#gameLogic()
-        this.#startTime = Date.now()
+        this.#gameInitialize(2, 4, 'game-medium')
       })
 
       this.#fourbyfour.addEventListener('click', (event) => {
         event.preventDefault()
-        this.#options.setAttribute('class', 'hidden')
-        this.#game.removeAttribute('class', 'hidden')
-        this.#game.setAttribute('id', 'game-hard')
-        this.#createTiles(4, 4)
-        this.#shuffleImages()
-        this.#gameLogic()
-        this.#startTime = Date.now()
+        this.#gameInitialize(4, 4, 'game-hard')
       })
 
       // Game over
@@ -176,20 +227,22 @@ customElements.define('memory-app',
         this.#endTime = Date.now()
         this.#totalTime = (Math.round((this.#endTime - this.#startTime) / 1000))
         this.#endMessage.querySelector('h4').textContent = `You win! It took you ${this.#totalTime} seconds and ${this.#numberOfMatches} attempts.`
-        this.#clickButton()        
+        this.#clickButton()
       })
+    } // CONSTRUCTOR END
 
-    } // CONSTRUCTOR END  
-
-    connectedCallback() {
+    /**
+     * Used when the element is added to the DOM. Listens to the flip event, thereafter calling the #gameLogic method.
+     */
+    connectedCallback () {
       this.#game.addEventListener('flip', () => this.#gameLogic())
     }
 
     /**
-     * Event on clicking the button.
+     * Event on clicking the play again button after finishing a game. Hide or show relevant parts of the component, reset the innerHTML of the game, reset the matching of the tiles to 0 and the images to the orriginal array.
      */
-    #clickButton() {
-      this.shadowRoot.querySelector('button').addEventListener('click', () => {
+    #clickButton () {
+      this.#playAgainButton.addEventListener('click', () => {
         this.#options.removeAttribute('class', 'hidden')
         this.#options.setAttribute('class', 'options')
         this.#endMessage.setAttribute('class', 'hidden')
@@ -200,9 +253,11 @@ customElements.define('memory-app',
     }
 
     /**
-     * Getter.
+     * Getter used get all the tiles.
+     *
+     * @returns {object} - an object containing tiles with specific attributes.
      */
-    get tiles() {
+    get tiles () {
       const tiles = Array.from(this.#tiles)
       return {
         all: tiles,
@@ -215,7 +270,7 @@ customElements.define('memory-app',
     /**
      * Set the rules for the game.
      */
-    #gameLogic() {
+    #gameLogic () {
       const tiles = this.tiles
       const tilesToDisable = Array.from(tiles.faceUp)
 
@@ -229,11 +284,9 @@ customElements.define('memory-app',
 
       if (second) {
         window.setTimeout(() => {
-          let eventName = 'memory-game:tiles-mismatch'
           if (first.isEqualNode(second)) {
             first.setAttribute('hidden', '')
             second.setAttribute('hidden', '')
-            eventName = 'memory-game:tiles-match'
             this.#numberOfMatches++
           } else {
             first.removeAttribute('face-up')
@@ -242,17 +295,9 @@ customElements.define('memory-app',
             this.#numberOfMatches++
           }
 
-          this.dispatchEvent(new CustomEvent(eventName, {
-            bubbles: true,
-            detail: { first, second }
-          }))
-
           if (tiles.all.every(tile => tile.hidden)) {
             tiles.all.forEach(tile => (tile.disabled = true))
-            this.dispatchEvent(new CustomEvent('memory-game:game-over', {
-              bubbles: true
-            }))
-
+            this.dispatchEvent(new CustomEvent('memory-game:game-over'))
           } else {
             tilesToEnable?.forEach(tile => (tile.removeAttribute('disabled')))
           }
@@ -261,26 +306,26 @@ customElements.define('memory-app',
     }
 
     /**
-     * Create game tiles according to the number of columns and rows.
+     * Create game tiles according to the number of rows and columns.
      *
-     * @param {*} numberOfColumns 
-     * @param {*} numberOfRows 
+     * @param {number} numberOfRows - the number of rows.
+     * @param {number} numberOfColumns - the number of columns.
      */
-    #createTiles(numberOfRows, numberOfColumns) {
-      // create an array of tiles
+    #createTiles (numberOfRows, numberOfColumns) {
+      // Create an array of tiles.
       this.#tiles = []
 
-      // generate as many tiles as you need
+      // Generate as many tiles as needed.
       for (let i = 0; i < (numberOfColumns * numberOfRows) / 2; i++) {
-        this.#tile = document.createElement('memory-tile')
+        const tile = document.createElement('memory-tile')
         const imgSlot = this.#createSlottedImage()
-        this.#tile.appendChild(imgSlot)
-        const clonedTile = this.#tile.cloneNode(true)
-        this.#tiles.push(this.#tile)
+        tile.appendChild(imgSlot)
+        const clonedTile = tile.cloneNode(true)
+        this.#tiles.push(tile)
         this.#tiles.push(clonedTile)
       }
 
-      // create columns out of the tiles, append tiles to them and then append them to the game
+      // Create columns out of the tiles, append tiles to them and then append them to the game.
       for (let i = 0; i < numberOfColumns * numberOfRows; i += numberOfRows) {
         const column = document.createElement('div')
         for (let j = 0; j < numberOfRows; j++) {
@@ -291,9 +336,11 @@ customElements.define('memory-app',
     }
 
     /**
-     * Get a random image from an array of images. A different one everytime.
+     * Get a random image URL string from an array of images. The image is different everytime.
+     *
+     * @returns {string} - an URL string of a random image.
      */
-    #getRandomImage() {
+    #getRandomImage () {
       const randomIndex = Math.floor(Math.random() * this.#images.length)
       const randomImage = this.#images[randomIndex]
       this.#images.splice(randomIndex, 1)
@@ -301,11 +348,11 @@ customElements.define('memory-app',
     }
 
     /**
-     * Create a slotted image with the img source from #getRandomImage
-     * 
-     * @returns 
+     * Create a slotted image with the img source from the #getRandomImage method.
+     *
+     * @returns {HTMLImageElement} - the slotted image.
      */
-    #createSlottedImage() {
+    #createSlottedImage () {
       const imgSlot = document.createElement('img')
       const source = this.#getRandomImage()
       imgSlot.setAttribute('src', source)
@@ -313,35 +360,38 @@ customElements.define('memory-app',
     }
 
     /**
-     * Shuffle the src attributes around.
+     * Method that shuffles the images by shuffling the src attributes around.
      */
-    #shuffleImages() {
+    #shuffleImages () {
       this.#tiles = this.#game.querySelectorAll('memory-tile')
       const srcs = []
 
+      // Get all the src attributes and push them into an array.
       for (const tile of this.#tiles) {
         const img = tile.firstChild
         const src = img.getAttribute('src')
         srcs.push(src)
       }
 
+      // Shuffle the srcs in the array using the #shuffleArray method.
       const shuffledScrs = this.#shuffleArray(srcs)
 
+      // Set the attribute src to the srcs from the shuffled array of srcs. Start with index 0 and increment the index until there are no more srcs.
       let index = 0
       for (const tile of this.#tiles) {
         const img = tile.firstChild
         img.setAttribute('src', shuffledScrs[index])
         index++
       }
-
     }
+
     /**
      * Shuffle an array with the Fisher-Yates algorithm.
      *
-     * @param {*} array 
-     * @returns array
+     * @param {Array} array - an array.
+     * @returns {Array} - the shuffled array.
      */
-    #shuffleArray(array) {
+    #shuffleArray (array) {
       // Fisher-Yates shuffle algorithm
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
@@ -350,6 +400,23 @@ customElements.define('memory-app',
         array[j] = temp
       }
       return array
+    }
+
+    /**
+     * Initialize the game for every option.
+     *
+     * @param {number} numberOfRows - the number of rows.
+     * @param {number} numberOfColumns - the number of columns.
+     * @param {string} id - the id of the game difficulty chosen.
+     */
+    #gameInitialize (numberOfRows, numberOfColumns, id) {
+      this.#options.setAttribute('class', 'hidden')
+      this.#game.removeAttribute('class', 'hidden')
+      this.#game.setAttribute('id', id)
+      this.#createTiles(numberOfRows, numberOfColumns)
+      this.#shuffleImages()
+      this.#gameLogic()
+      this.#startTime = Date.now()
     }
   }
 )
