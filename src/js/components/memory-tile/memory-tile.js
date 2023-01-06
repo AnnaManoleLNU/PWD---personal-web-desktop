@@ -194,7 +194,7 @@ customElements.define('memory-tile',
         : this.setAttribute('face-up', '')
 
       // Raise the my-flipping-tile-extra:flip event.
-      this.dispatchEvent(new CustomEvent('flip', { bubbles: true }))
+      this.dispatchEvent(new CustomEvent('memory-tile:flip', { bubbles: true }))
     }
   }
 )

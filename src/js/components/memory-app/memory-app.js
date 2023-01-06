@@ -71,7 +71,7 @@ template.innerHTML = `
     <h1>Memory game</h1>
     <h3>Select game difficulty</h3>
       <p id="twobytwo">2x2</p>
-      <p id="twobyfour">4x2</p>
+      <p id="twobyfour">2x4</p>
       <p id="fourbyfour">4x4</p>
   </div>
 
@@ -235,7 +235,7 @@ customElements.define('memory-app',
      * Used when the element is added to the DOM. Listens to the flip event, thereafter calling the #gameLogic method.
      */
     connectedCallback () {
-      this.#game.addEventListener('flip', () => this.#gameLogic())
+      this.#game.addEventListener('memory-tile:flip', () => this.#gameLogic())
     }
 
     /**
@@ -268,7 +268,7 @@ customElements.define('memory-app',
     }
 
     /**
-     * Set the rules for the game.
+     * Set the rules for the game. When two tiles match (are the same node) they get the attribute hidden. If the tiles don't match they get flipped back around. Only who tiles may be flipped at the same time, the others are disabled while the matching occurs.
      */
     #gameLogic () {
       const tiles = this.tiles
