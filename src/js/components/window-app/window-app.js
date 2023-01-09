@@ -21,7 +21,7 @@ template.innerHTML = `
       border-radius: 5px;
       overflow: hidden;
       box-shadow: 10px 10px 10px 10px rgba(0, 0, 0, 0.5);
-      top: 200px;
+      top: 250px;
       left: 200px;
     }
     
@@ -92,13 +92,64 @@ customElements.define('window-app',
    * Represents a window-app element.
    */
   class extends HTMLElement {
+    /**
+     * The window application header.
+     *
+     * @type {HTMLDivElement}
+     */
     #windowAppHeader
 
+    /**
+     * The whole window application.
+     *
+     * @type {HTMLDivElement}
+     */
     #windowApp
 
+    /**
+     * The close "button" for the application, represented by an image.
+     *
+     * @type {HTMLDivElement}
+     */
     #closeButton
 
+    /**
+     * The highest z-index tracker, used to store data shared by all window instances. Needs to be accessible from any instance of the class.
+     *
+     * @type {number}
+     */
     static highestIndex = 0
+
+    /**
+     * Initial position of the element when the drag starts, on x and y axis.
+     *
+     * @type {number}
+     */
+    #initialX = 0
+    #initialY = 0
+
+    /**
+     * Current position of the element, on the x and y axis.
+     *
+     * @type {number}
+     */
+    #currentX = 0
+    #currentY = 0
+
+    /**
+     * Offset from the initial position, on the x and y axis.
+     *
+     * @type {number}
+     */
+    #xOffset = 0
+    #yOffset = 0
+
+    /**
+     * Flag that indicates whether the element is currently being dragged.
+     *
+     * @type {boolean}
+     */
+    #isDragging = false
 
     /**
      * Creates an instance of the current type.
@@ -115,21 +166,6 @@ customElements.define('window-app',
       this.#windowAppHeader = this.shadowRoot.querySelector('.window-app-header')
       this.#windowApp = this.shadowRoot.querySelector('.window-app')
       this.#closeButton = this.shadowRoot.querySelector('.window-app-close')
-
-      // Flag that indicates whether the element is currently being dragged
-      this.isDragging = false
-
-      // Initial position of the element when the drag starts
-      this.initialX = 0
-      this.initialY = 0
-
-      // Current position of the element
-      this.currentX = 0
-      this.currentY = 0
-
-      // Offset from the initial position
-      this.xOffset = 0
-      this.yOffset = 0
 
       // Event listeners
       // Event listener for the mouse being down on window header
@@ -167,14 +203,16 @@ customElements.define('window-app',
      */
     #handleMouseDown (event) {
       // offsetLeft/offsetTop - number of pixels offset from the parent element
-      this.initialX = this.#windowApp.offsetLeft
-      this.initialY = this.#windowApp.offsetTop
+      // Starts at 200/250 left and top.
+      this.#initialX = this.#windowApp.offsetLeft
+      this.#initialY = this.#windowApp.offsetTop
 
-      // client x/y - the mouse coordinates on the x and y axis
-      this.xOffset = event.clientX - this.#windowApp.offsetLeft
-      this.yOffset = event.clientY - this.#windowApp.offsetTop
+      // The offset from the left and top.
+      // client x/y - the mouse coordinates on the x and y axis where the event occured.
+      this.#xOffset = event.clientX - this.#windowApp.offsetLeft
+      this.#yOffset = event.clientY - this.#windowApp.offsetTop
 
-      this.isDragging = true
+      this.#isDragging = true
     }
 
     /**
@@ -183,7 +221,7 @@ customElements.define('window-app',
      * @param {object} event - the event object.
      */
     #handleMouseUp (event) {
-      this.isDragging = false
+      this.#isDragging = false
     }
 
     /**
@@ -192,35 +230,35 @@ customElements.define('window-app',
      * @param {object} event - the event object.
      */
     #handleMouseMove (event) {
-      if (this.isDragging) {
+      if (this.#isDragging) {
         event.preventDefault()
 
         //  Calculate the current position of the window app based on the distance the mouse has moved from the initial position
-        this.currentX = event.clientX - this.xOffset
-        this.currentY = event.clientY - this.yOffset
+        this.#currentX = event.clientX - this.#xOffset
+        this.#currentY = event.clientY - this.#yOffset
 
         // Constrain the window app within the browser window
         // if the current x position of window app < maximum allow position (0 for the edge of the browser)
-        if (this.currentX < 0) {
-          this.currentX = 0
+        if (this.#currentX < 0) {
+          this.#currentX = 0
         }
 
         // if the current x position of window app > maximum allow position (width of browser - width of window app)
-        if (this.currentX > window.innerWidth - this.#windowApp.offsetWidth) {
-          this.currentX = window.innerWidth - this.#windowApp.offsetWidth
+        if (this.#currentX > window.innerWidth - this.#windowApp.offsetWidth) {
+          this.#currentX = window.innerWidth - this.#windowApp.offsetWidth
         }
 
         // same behaviour for y
-        if (this.currentY < 0) {
-          this.currentY = 0
+        if (this.#currentY < 0) {
+          this.#currentY = 0
         }
-        if (this.currentY > window.innerHeight - this.#windowApp.offsetHeight) {
-          this.currentY = window.innerHeight - this.#windowApp.offsetHeight
+        if (this.#currentY > window.innerHeight - this.#windowApp.offsetHeight) {
+          this.#currentY = window.innerHeight - this.#windowApp.offsetHeight
         }
 
         // Set the new position of the window app with style.left and style.top
-        this.#windowApp.style.left = `${this.currentX}px`
-        this.#windowApp.style.top = `${this.currentY}px`
+        this.#windowApp.style.left = `${this.#currentX}px`
+        this.#windowApp.style.top = `${this.#currentY}px`
       }
     }
 

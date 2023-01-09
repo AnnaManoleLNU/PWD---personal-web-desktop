@@ -17,7 +17,8 @@ template.innerHTML = `
       width: 100%;
       height: 100%;
       overflow: hidden;
-      user-select: none;
+      /** Make it so you can't accidentally select anything on the desktop, so that the background feels like an image */
+      /* user-select: none; */
     }
 
     h1 {
@@ -146,7 +147,7 @@ customElements.define('pwd-app',
 
       // Event listener for clicking on the cookbok app icon
       this.#myCookbookIcon.addEventListener('click', (event) => {
-        this.#createApp('window-app', 'my-cookbook', 'Coobook')
+        this.#createApp('window-app', 'my-cookbook', 'Cookbook')
         this.#lastWindowActive()
       })
 

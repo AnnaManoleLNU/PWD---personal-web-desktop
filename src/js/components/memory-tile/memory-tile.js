@@ -64,6 +64,10 @@ template.innerHTML = `
       border-color: #858585;
     }
 
+    #tile:focus {
+      outline: 2px solid pink;
+    }
+
     #front,
     #back {
       width: calc(100% - 4px);
@@ -103,7 +107,7 @@ template.innerHTML = `
 
   </style>
 
-    <button id="tile" >
+    <button id="tile">
       <div id="front">
         <slot></slot>
       </div>
@@ -143,6 +147,14 @@ customElements.define('memory-tile',
       this.addEventListener('click', (event) => {
         // Flip if main button (left-click).
         if (event.button === 0) {
+          this.#flip()
+        }
+      })
+
+      // Listen to keydown events.
+      this.addEventListener('keydown', (event) => {
+        // Flip if Enter or Space key pressed.
+        if (KeyboardEvent.key === 'Enter') {
           this.#flip()
         }
       })
