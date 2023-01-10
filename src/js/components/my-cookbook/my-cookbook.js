@@ -25,7 +25,7 @@ template.innerHTML = `
         height: 100%;
     }
 
-    #recipedetails {
+    #recipe-details {
         padding: 10px 10px 10px 10px;
     }
     
@@ -57,9 +57,9 @@ template.innerHTML = `
 <div id="menu">
     <h1>Cookbook</h1>
     <h3>What would you like to cook today?</h3>
-    <div id="recipelist"></div>
+    <div id="recipe-list"></div>
 </div>
-<div id="recipedetails" class="hidden">
+<div id="recipe-details" class="hidden">
     <h2 id="title"></h2>
     <ul id="ingredients"></ul>
     <p id="instr"></p>
@@ -137,8 +137,8 @@ customElements.define('my-cookbook',
 
       // Query selectors
       this.#menu = this.shadowRoot.querySelector('#menu')
-      this.#recipeDetails = this.shadowRoot.querySelector('#recipedetails')
-      this.#recipeList = this.shadowRoot.querySelector('#recipelist')
+      this.#recipeDetails = this.shadowRoot.querySelector('#recipe-details')
+      this.#recipeList = this.shadowRoot.querySelector('#recipe-list')
       this.#recipeTitle = this.shadowRoot.querySelector('#title')
       this.#instructions = this.shadowRoot.querySelector('#instr')
       this.#ingredients = this.shadowRoot.querySelector('#ingredients')

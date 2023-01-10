@@ -8,6 +8,11 @@ A web component that represents a memory app.
 No attributes present.
 
 
+## Public methods
+
+`get tiles` - provides access to the tiles' attributes (faceUp, faceDown, hidden).
+
+
 ## Events
 
 ### Event (3 event listeners) - `click` event on options.

@@ -209,8 +209,8 @@ customElements.define('window-app',
 
       // The offset from the left and top.
       // client x/y - the mouse coordinates on the x and y axis where the event occured.
-      this.#xOffset = event.clientX - this.#windowApp.offsetLeft
-      this.#yOffset = event.clientY - this.#windowApp.offsetTop
+      this.#xOffset = event.clientX - this.#initialX
+      this.#yOffset = event.clientY - this.#initialY
 
       this.#isDragging = true
     }

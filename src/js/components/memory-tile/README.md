@@ -21,6 +21,10 @@ A boolean attribute which, if present, hides the visibility of the element.
 Fired When - The user left clicks on the tile.
 Does - flips the tile if it's not disabled.
 
+### Event - `keyboard` event on the tile.
+Fired When - The user selects a tile with tab in the memory game and presses enter on it.
+Does - flips the tile if it's not disabled.
+
 
 ## Slot
 One slot that can be used to store other HTML elements, in this example images.

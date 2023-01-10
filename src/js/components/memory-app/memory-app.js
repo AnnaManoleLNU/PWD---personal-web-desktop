@@ -221,7 +221,7 @@ customElements.define('memory-app',
       })
 
       // Game over event listener
-      this.addEventListener('memory-game:game-over', () => {
+      this.addEventListener('gameover', () => {
         this.#endMessage.removeAttribute('class', 'hidden')
         this.#game.setAttribute('class', 'hidden')
         this.#game.removeAttribute('id', '')
@@ -294,7 +294,7 @@ customElements.define('memory-app',
 
           if (tiles.all.every(tile => tile.hidden)) {
             tiles.all.forEach(tile => (tile.disabled = true))
-            this.dispatchEvent(new CustomEvent('memory-game:game-over'))
+            this.dispatchEvent(new CustomEvent('gameover'))
           } else {
             tilesToEnable?.forEach(tile => (tile.removeAttribute('disabled')))
           }

@@ -154,7 +154,7 @@ customElements.define('memory-tile',
       // Listen to keydown events.
       this.addEventListener('keydown', (event) => {
         // Flip if Enter or Space key pressed.
-        if (KeyboardEvent.key === 'Enter') {
+        if (event.key === 'Enter' || event.key === ' ') {
           this.#flip()
         }
       })

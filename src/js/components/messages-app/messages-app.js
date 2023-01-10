@@ -137,10 +137,25 @@ customElements.define('messages-app',
      */
     #socket
 
+    /**
+     * The button used to open the emoji picker.
+     *
+     * @type {HTMLButtonElement}
+     */
     #emojiButton
 
+    /**
+     * The emoji picker.
+     *
+     * @type {Picker}
+     */
     #picker
 
+    /**
+     * The container used to store the emoji picker.
+     *
+     * @type {HTMLDivElement}
+     */
     #emojiPickerContainer
 
     /**
