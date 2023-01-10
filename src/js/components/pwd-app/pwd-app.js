@@ -18,7 +18,7 @@ template.innerHTML = `
       height: 100%;
       overflow: hidden;
       /** Make it so you can't accidentally select anything on the desktop, so that the background feels like an image */
-      /* user-select: none; */
+      user-select: none;
     }
 
     h1 {

@@ -194,6 +194,9 @@ customElements.define('window-app',
      */
     connectedCallback () {
       this.#appFocus()
+
+      this.#windowApp.setAttribute('tabindex', '0')
+      this.#windowApp.focus()
     }
 
     /**
