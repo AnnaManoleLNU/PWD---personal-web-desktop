@@ -1,7 +1,7 @@
 # Personal Web Desktop (PWD)
 
 ## Overview  
-The Personal Web Desktop (PWD) is a single-page application (SPA) with integrated chat functionality using Web Sockets. It includes a memory game, a messaging app, and a cookbook application.
+The Personal Web Desktop (PWD) is a single-page application (SPA) with integrated chat functionality using Web Sockets. It includes a memory game, a messaging app, and a cookbook app.
 
 ## Features  
 ### **1. PWD (Main Application)**  
@@ -23,6 +23,6 @@ The Personal Web Desktop (PWD) is a single-page application (SPA) with integrate
 - Functions like common messaging apps (WhatsApp, Signal, etc.).  
 - Users can set their username and after that start chatting in our internal school system.
 
-### **4. Cookbook application**  
+### **4. Cookbook Sub-App**  
 - Fetches recipes using an external API.
 - The users may choose between 3 recipes.
